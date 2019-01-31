@@ -1,9 +1,9 @@
 
 ## Prerequisite
 
-> * created an AKS cluster (Kubernetes 1.10 and above, with RBAC enabled) [AKS quickstart][https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/aks/kubernetes-walkthrough.md]
+> * created an AKS cluster (Kubernetes 1.10 and above, with RBAC enabled) [AKS quickstart](https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/aks/kubernetes-walkthrough.md)
 > * An established `kubectl` connection with the cluster
-> * Istio installed in your cluster [install Istio in AKS][https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/aks/istio-install.md]
+> * Istio installed in your cluster [install Istio in AKS](https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/aks/istio-install.md)
 
 ## About this application scenario
 
@@ -23,7 +23,7 @@ Let's start by deploying the application into your Azure Kubernetes Service (AKS
 
 ![The AKS Voting app components and routing.](./images/components-and-routing-01.png)
 
-The artifacts you need to follow along with this article are available in the [Azure-Samples/aks-voting-app][https://github.com/Azure-Samples/aks-voting-app] GitHub repo. You can either download the artifacts or clone the repo as follows:
+The artifacts you need to follow along with this article are available in the [Azure-Samples/aks-voting-app](https://github.com/Azure-Samples/aks-voting-app) GitHub repo. You can either download the artifacts or clone the repo as follows:
 
 ```console
 git clone https://github.com/Azure-Samples/aks-voting-app.git
@@ -65,9 +65,9 @@ service/voting-app created
 ```
 
 > [!NOTE]
-> Istio has some specific requirements around pods and services. For more information, see the [Istio Requirements for Pods and Services documentation][https://istio.io/docs/setup/kubernetes/spec-requirements/].
+> Istio has some specific requirements around pods and services. For more information, see the [Istio Requirements for Pods and Services documentation](https://istio.io/docs/setup/kubernetes/spec-requirements/).
 
-To see the pods that have been created, use the [kubectl get pods][https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#get] command as follows:
+To see the pods that have been created, use the [kubectl get pods](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#get) command as follows:
 
 ```console
 kubectl get pods -n voting
@@ -84,7 +84,7 @@ voting-app-1-0-6c65c4bdd4-strzc         2/2       Running   0          1m
 voting-storage-1-0-7954799d96-5fv9r     2/2       Running   0          1m
 ```
 
-To see information about the pod, use the [kubectl describe pod][https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#describe]. Replace the pod name with the name of a pod in your own AKS cluster from the previous output:
+To see information about the pod, use the [kubectl describe pod](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#describe). Replace the pod name with the name of a pod in your own AKS cluster from the previous output:
 
 ```console
 kubectl describe pod voting-app-1-0-6c65c4bdd4-bdmld --namespace voting
