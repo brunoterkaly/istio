@@ -63,6 +63,8 @@ helm init --service-account tiller
 
 ### Install Istio:
 
+#### https://istio.io/docs/setup/kubernetes/minimal-install/
+
 ```bash
 helm install install/kubernetes/helm/istio --name istio-minimal --namespace istio-system \
   --set security.enabled=false \
@@ -90,12 +92,149 @@ NAME                                     READY     STATUS    RESTARTS   AGE
 istio-pilot-58c65f74bc-2f5xn             1/1       Running   0          1m
 ```
 
+# Viewing and Understanding the Istio Components
+
+You will need to install the Kubernetes Dashboard.
+
+## Setting up ClusterRole Binding
+
+It is needed to have access to the Dashboard.
+
+```bash
+kubectl create clusterrolebinding kubernetes-dashboard --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
+ ```
+ You will need to enalbe the proxy which let's us tunnel in through `localhost`.
+
+```bash
+kubectl proxy
+Starting to serve on 127.0.0.1:8001
+```
+
+ _Figure: Setting up the proxy_
+
+## Accessing the Dashboard
+
+Now go your browser and enter the following:
+
+```bash
+http://localhost:8001/api/v1/namespaces/kube-system/services/kubernetes-dashboard/proxy/#!/overview?namespace=default
+ ```
+
+ You should see this:
+
+ ![Dashboard](./images/dashboard.png)
+
+## Understanding Istio Inside of Kubernetes
+
+The `istio-system` namespace is where all the components for Istio are stored.
+
+Kubernetes constructs include:
+
+- Deployments
+- Pods
+- Replicasets
+- Services
+- ConfigMaps
+- Secrets
+
+Let's break it down.
+
+### Deployments
+
+A Deployment controller provides declarative updates for Pods and ReplicaSets.
+
+You describe a desired state in a Deployment object, and the Deployment controller changes the actual state to the desired state at a controlled rate. 
+
+You can define Deployments to create new ReplicaSets, or to remove existing Deployments and adopt all their resources with new Deployments.
+
+**istio-citadel** - An optional health-checking feature. In public key infrastructure (PKI) systems, a certificate signing request (also CSR or certification request) is a message sent from an applicant to a certificate authority in order to apply for a digital identity certificate. This service/pod will detect failures in the CSR signing service.
+
+
+**istio-egressgateway** - The Control Egress Traffic task demonstrates how external (outside the Kubernetes cluster) HTTP and HTTPS services can be accessed from applications inside the mesh. 
+ - By default, Istio-enabled applications are unable to access URLs outside the cluster. 
+ - To enable such access, a service entry for the external service must be defined, or, alternatively, direct access to external services must be configured.
+ - The idea is that all traffic that leaves the service mesh must flow through a set of dedicated nodes that are separate from the rest of the nodes used for running applications in the cluster.
+ - The special nodes will serve for policy enforcement on the egress traffic and will be monitored more thoroughly than the rest of the nodes.
+
+**istio-galley** - Galley is the top-level config ingestion, processing and distribution component of Istio. 
+ - It is responsible for insulating the rest of the Istio components from the details of obtaining user configuration from the underlying platform.
+ - A resource is an endpoint in the Kubernetes API that stores a collection of API objects of a certain kind. For example, the built-in pods resource contains a collection of Pod objects.
+ - Configuration options include authorization, traffic routing, policies/telemetry, and authentication policy.
+
+**istio-ingressgateway** - Istio no longer leverages an `Ingress` controller to handle traffic coming into the cluster. There are new resources:
+
+ - `Gateway`
+ - `VirtualServices`
+
+
+
+**istio-pilot** - x
+
+**istio-policy** - x
+
+**istio-sidecar-injector** - x
+
+**istio-telemetry** - x
+
+**prometheus** - x
+
+### Pods
+
+### Replicasets
+
+### Services
+
+
+### ConfigMaps
+
+
+### Secrets
+
+
+### 
+
+
+### 
+
+
+### 
+
 ```bash
  ```
+
+#### x
+
+```bash
+ ```
+
+#### x
+
+```bash
+ ```
+
+#### x
+
+```bash
+ ```
+
+#### x
+
+```bash
+ ```
+
+#### x
+
+```bash
+ ```
+
+#### x
+
 ```bash
  ```
 
 ```bash
  ```
+
+
 ```bash
  ```
