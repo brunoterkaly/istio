@@ -161,11 +161,18 @@ You can define Deployments to create new ReplicaSets, or to remove existing Depl
  - A resource is an endpoint in the Kubernetes API that stores a collection of API objects of a certain kind. For example, the built-in pods resource contains a collection of Pod objects.
  - Configuration options include authorization, traffic routing, policies/telemetry, and authentication policy.
 
-**istio-ingressgateway** - Istio no longer leverages an `Ingress` controller to handle traffic coming into the cluster. There are new resources:
+**istio-ingressgateway** - Istio no longer leverages an `Ingress` controller to handle traffic coming into the cluster. It is really a fancy wrapper around the `Envoy` proxy. 
 
- - `Gateway`
- - `VirtualServices`
+The istio-pilot, explained next, detects changes the istio-ingressgateway, and sends that configuration information to the `Envoy` sidecars for routing.
 
+The istio-ingressgateway is composed of two resources:
+
+ - `Gateway` - Used to configure the ports for `Envoy`. 
+ - `VirtualServices` - Works with `Gateway` to configure `Envoy`.
+
+These resources work together. There is a `Istio IngressGateway Service` that is listening on the Loadbalancer. The `istio-gateway` with help from other components configures the ports, protocol, and certificates. 
+
+The load balancer can be configured through the service type: LoadBalancer. Azure supports automatic configuration and  forward traffic to a port that the IngressGateway Service is listening on. 
 
 
 **istio-pilot** - x
