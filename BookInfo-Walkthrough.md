@@ -148,7 +148,9 @@ istio-ingressgateway   10.0.5.12    13.66.153.108   80:31380/TCP,443:31390/TCP,3
 
 ## Determining the ingress IP and port
 
-Browser enabled - you need to make the application accessible from outside of your Kubernetes cluster, e.g., from a browser. An Istio Gateway is used for this purpose.
+**Browser enabled** - you need to make the application accessible from outside of your Kubernetes cluster, e.g., from a browser. 
+
+**How to browser-enable** - An Istio Gateway is used for this purpose.
 
 **Define a gateway** - The command below can create ingress gateway for the application:
 
