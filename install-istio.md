@@ -88,7 +88,7 @@ You may have a different path as I am running as `root` locally.
 
 ### Installation with Helm
 
-If a `service account` has not already been installed for Tiller, install one:
+If a `service account` has not already been installed for Tiller, install one. Be sure to be running Helm v2.12.1:
 
 ```bash
 kubectl apply -f install/kubernetes/helm/helm-service-account.yaml
@@ -301,3 +301,8 @@ default-token-ksp2b, istio-ca-secret, istio-citadel-service-account-token-fwdcs,
 
 
 
+<<<<<<< HEAD
+=======
+```bash
+ ```
+>>>>>>> 3fe80c576a530ce7cb0f4aa17ab148e8d4041aa0
