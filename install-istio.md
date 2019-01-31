@@ -170,12 +170,24 @@ The istio-ingressgateway is composed of two resources:
  - `Gateway` - Used to configure the ports for `Envoy`. 
  - `VirtualServices` - Works with `Gateway` to configure `Envoy`.
 
+![ingress-gateway](./images/ingress-gateway.png)
+
 These resources work together. There is a `Istio IngressGateway Service` that is listening on the Loadbalancer. The `istio-gateway` with help from other components configures the ports, protocol, and certificates. 
 
 The load balancer can be configured through the service type: LoadBalancer. Azure supports automatic configuration and  forward traffic to a port that the IngressGateway Service is listening on. 
 
+The `VirtualServices` resource is key. By including a list of gateways, a virtual service tells Istio to configure those gateways with the routes defined in the VirtualService configuration. 
 
-**istio-pilot** - x
+**istio-pilot** - Routing rules are specified that tell Pilot which pods/VMs are to receive traffic. Pilot manages and configures Envoy proxy/sidecar instances. Pilot provides load balancing information to each Envoy instance. Pilot is responsible for the lifecycle of Envoy instances deployed across the Istio service mesh. 
+
+For example, you can specify via Pilot that you want 5% of traffic for a particular service to go to a canary version irrespective of the size of the canary deployment, or send traffic to a particular version depending on the content of the request.
+
+Supports Dynamic request routing for:
+
+- A/B testing
+- Gradual Rollouts
+- Canary Releases
+- Failure recovery with timeouts, retries, circuit breakers, and fault injection
 
 **istio-policy** - x
 
