@@ -143,7 +143,7 @@ The result should look something like this:
 
 ```bash
 NAME                   CLUSTER-IP   EXTERNAL-IP     PORT(S)                                                                                                                   AGE
-istio-ingressgateway   10.0.5.12    13.66.153.102   80:31380/TCP,443:31390/TCP,31400:31400/TCP,15011:30095/TCP,8060:31630/TCP,853:32106/TCP,15030:30937/TCP,15031:30425/TCP   1d
+istio-ingressgateway   10.0.5.12    13.66.153.108   80:31380/TCP,443:31390/TCP,31400:31400/TCP,15011:30095/TCP,8060:31630/TCP,853:32106/TCP,15030:30937/TCP,15031:30425/TCP   1d
 ```
 
 ## Determining the ingress IP and port
@@ -173,7 +173,7 @@ bookinfo-gateway   32s
 
 | Public IP Address | URL
 |:--|:---|
-| 13.66.153.102 | http://13.66.153.102/productpage|
+| 13.66.153.108 | http://13.66.153.108/productpage|
 
 
 ![Product Page](./images/productpage.png)
