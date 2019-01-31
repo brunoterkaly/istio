@@ -298,11 +298,3 @@ Intended to hold sensitive information, such as passwords, OAuth tokens, and ssh
 
 default-token-ksp2b, istio-ca-secret, istio-citadel-service-account-token-fwdcs, istio-egressgateway-service-account-token-w8vzt, istio-galley-service-account-token-6wx4l, istio-ingressgateway-service-account-token-kfs29, istio-mixer-service-account-token-8pdlg, istio-pilot-service-account-token-hzxzj, istio-security-post-install-account-token-5kzmj, istio-sidecar-injector-service-account-token-vdf9g, istio.default, istio.istio-citadel-service-account, istio.istio-egressgateway-service-account, istio.istio-galley-service-account, istio.istio-ingressgateway-service-account, istio.istio-mixer-service-account, istio.istio-pilot-service-account, istio.istio-security-post-install-account, istio.istio-sidecar-injector-service-account, istio.prometheus, prometheus-token-bv7kw
 
-
-
-
-<<<<<<< HEAD
-=======
-```bash
- ```
->>>>>>> 3fe80c576a530ce7cb0f4aa17ab148e8d4041aa0
