@@ -1,3 +1,64 @@
+# Istio Concepts
+
+## Architecture
+
+An Istio service mesh is logically split into a data plane and a control plane.
+
+- The `data plane` is composed of a set of intelligent proxies (`Envoy`) deployed as sidecars. These proxies mediate and control all network communication between microservices along with `Mixer`, a general-purpose policy and telemetry hub.
+
+- The `control plane` manages and configures the proxies to route traffic. Additionally, the control plane configures `Mixers` to enforce policies and collect telemetry.
+
+The following diagram shows the different components that make up each plane:
+
+
+ ![Envoy](./images/envoy.png)
+
+### Envoy
+
+**Envoy is the Proxy** - Istio uses an extended version of the Envoy proxy. 
+
+**High performance** - Envoy is a high-performance proxy developed in C++ to mediate all inbound and outbound traffic for all services in the service mesh. 
+
+**Features** - Istio leverages Envoy’s many built-in features, for example:
+
+    Dynamic service discovery
+    Load balancing
+    TLS termination
+    HTTP/2 and gRPC proxies
+    Circuit breakers
+    Health checks
+    Staged rollouts with %-based traffic split
+    Fault injection
+    Rich metrics
+
+**Envoy is a sidecar** - It is deployed as a sidecar to the relevant service in the same Kubernetes pod. 
+
+**Knows traffic behavior** - This deployment allows Istio to extract a wealth of signals about traffic behavior as attributes.
+
+**Feed data to Mixer** - Istio can, in turn, use these attributes in Mixer to enforce policy decisions, and send them to monitoring systems to provide information about the behavior of the entire mesh.
+
+**No need to recompile apps** - The sidecar proxy model also allows you to add Istio capabilities to an existing deployment with no need to rearchitect or rewrite code. You can read more about why we chose this approach in our Design Goals.
+
+### Mixer
+
+**Access Control and Usage Policy** - Mixer enforces access control and usage policies across the service mesh, and collects telemetry data from the Envoy proxy and other services. 
+
+**Works with Envoy Proxy** - The proxy extracts request level attributes, and sends them to Mixer for evaluation.
+
+### Citadel
+
+All about authentication - Citadel provides strong service-to-service and end-user authentication with built-in identity and credential management. 
+
+Encrypt Traffic - You can use Citadel to upgrade unencrypted traffic in the service mesh. 
+
+Policy enforcement - Using Citadel, operators can enforce policies based on service identity rather than on network controls.
+
+Authorizing Services -  You can use Istio’s authorization feature to control who can access your services.
+
+### Galley
+
+Galley validates user authored Istio API configuration on behalf of the other Istio control plane components. Over time, Galley will take over responsibility as the top-level configuration ingestion, processing and distribution component of Istio. It will be responsible for insulating the rest of the Istio components from the details of obtaining user configuration from the underlying platform (e.g. Kubernetes).
+
 # Istio Installation
 
 ## The steps to install Istio are:
@@ -189,71 +250,54 @@ Supports Dynamic request routing for:
 - Canary Releases
 - Failure recovery with timeouts, retries, circuit breakers, and fault injection
 
-**istio-policy** - x
+ **istio-policy** - used to enforce authorization policies, specifically enabling, configuring, and using Istio authentication policies.  It includes such things as access control system, telemetry capturing systems, quota enforcement systems, billing systems.
 
-**istio-sidecar-injector** - x
+**istio-sidecar-injector** - a sidecar is a pattern.  A Pod is composed of one or more application containers. A sidecar is a utility container in the Pod and its purpose is to support the main container. 
 
-**istio-telemetry** - x
+- Istio uses an extended version of the `Envoy proxy`. Envoy is a high-performance proxy developed in C++ to mediate all inbound and outbound traffic for all services in the service mesh.
 
-**prometheus** - x
+
+ ![Envoy](./images/envoy.png)
+
+
+
+**istio-telemetry** - used to obtain uniform metrics, logs, traces across the various services. Makes use of Istio Mixer and Istio sidecar.
+
+**prometheus** - collects Istio metrics and makes them available to Prometheus. Prometheus is an open source monitoring solution. See [Prometheus](https://prometheus.io/) link.
 
 ### Pods
 
+Explained above in the `Deployment` section. deployments are the higher level object that creates replica sets which create pods. The functional capabilities of these Kubernetes object types are identical.
+
+ ![Deploy](./images/deploy-to-pods.png)
+
+Explained above in the `Deployment` section.
+
 ### Replicasets
+
+Explained above in the `Deployment` section.
 
 ### Services
 
+Explained above in the `Deployment` section.
 
 ### ConfigMaps
+
+`ConfigMaps` allow you to decouple configuration artifacts from image content to keep containerized applications portable.
+
+`ConfigMaps` bind configuration files, command-line arguments, environment variables, port numbers, and other configuration artifacts to your Pods' containers and system components at runtime. 
+
+Here is the list:
+
+istio, istio-galley-configuration, istio-ingress-controller-leader-istio, istio-security-custom-resources, istio-sidecar-injector, istio-statsd-prom-bridge, prometheus 
 
 
 ### Secrets
 
+Intended to hold sensitive information, such as passwords, OAuth tokens, and ssh keys. Putting this information in a secret is safer and more flexible than putting it verbatim in a pod definition or in a docker image
 
-### 
-
-
-### 
+default-token-ksp2b, istio-ca-secret, istio-citadel-service-account-token-fwdcs, istio-egressgateway-service-account-token-w8vzt, istio-galley-service-account-token-6wx4l, istio-ingressgateway-service-account-token-kfs29, istio-mixer-service-account-token-8pdlg, istio-pilot-service-account-token-hzxzj, istio-security-post-install-account-token-5kzmj, istio-sidecar-injector-service-account-token-vdf9g, istio.default, istio.istio-citadel-service-account, istio.istio-egressgateway-service-account, istio.istio-galley-service-account, istio.istio-ingressgateway-service-account, istio.istio-mixer-service-account, istio.istio-pilot-service-account, istio.istio-security-post-install-account, istio.istio-sidecar-injector-service-account, istio.prometheus, prometheus-token-bv7kw
 
 
-### 
-
-```bash
- ```
-
-#### x
-
-```bash
- ```
-
-#### x
-
-```bash
- ```
-
-#### x
-
-```bash
- ```
-
-#### x
-
-```bash
- ```
-
-#### x
-
-```bash
- ```
-
-#### x
-
-```bash
- ```
-
-```bash
- ```
 
 
-```bash
- ```
