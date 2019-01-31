@@ -15,4 +15,91 @@ There are 3 versions of the `reviews` microservice:
 - Version `v2` calls the `ratings` service, and displays each rating as 1 to 5 black stars.
 - Version `v3` calls the `ratings` service, and displays each rating as 1 to 5 red stars.
 
+![bookinfo](./images/bookinfo.png)
 
+## More points
+
+There are some other interesting points to notice about the diagram above:
+
+- There are three distinct languages used for each of the different services
+- We will learn how to route traffic to specific version numbers, leveraging the concepts of Canary releases
+
+## Deployment of Sidecar
+
+You will also notice in the diagram below that the envoy proxy has been installed into each of the services.
+
+
+![bookinfo](./images/envoy-bookinfo.png)
+
+## The Deployment Yaml for Bookinfo
+
+In the next section we are about to deploy Bookinfo using a couple of commands in conjunction with each other (`kubectl` and `istioctl`).
+
+The beauty of these commands is that the 'Envoy' sidecar automatically gets injected into the each of the services.
+
+it might be worth noting that there is a bash script do the cleanup, `cleanup.sh`.
+
+```
+  platform
+    └── kube
+        ├── bookinfo-add-serviceaccount.yaml
+        ├── bookinfo-certificate.yaml
+        ├── bookinfo-db.yaml
+        ├── bookinfo-details-v2.yaml
+        ├── bookinfo-details.yaml
+        ├── bookinfo-ingress.yaml
+        ├── bookinfo-mysql.yaml
+        ├── bookinfo-ratings-discovery.yaml
+        ├── bookinfo-ratings-v2-mysql-vm.yaml
+        ├── bookinfo-ratings-v2-mysql.yaml
+        ├── bookinfo-ratings-v2.yaml
+        ├── bookinfo-ratings.yaml
+        ├── bookinfo-reviews-v2.yaml
+        ├── bookinfo.yaml
+        ├── cleanup.sh
+        ├── istio-rbac-details-reviews.yaml
+        ├── istio-rbac-enable.yaml
+        ├── istio-rbac-namespace.yaml
+        ├── istio-rbac-productpage.yaml
+        ├── istio-rbac-ratings.yaml
+        ├── rbac
+        │   ├── details-reviews-policy.yaml
+        │   ├── namespace-policy.yaml
+        │   ├── productpage-policy.yaml
+        │   ├── ratings-policy.yaml
+        │   └── rbac-config-ON.yaml
+        └── README.md
+```
+
+### Command line to deploy Bookinfo
+
+This particular version of the command is known as `manual sidecar injection` because `kubectl` is combined with `istioctl`.
+
+
+```/bash
+$ kubectl apply -f <(istioctl kube-inject -f samples/bookinfo/platform/kube/bookinfo.yaml)
+
+service/details created
+deployment.extensions/details-v1 created
+service/ratings created
+deployment.extensions/ratings-v1 created
+service/reviews created
+deployment.extensions/reviews-v1 created
+deployment.extensions/reviews-v2 created
+deployment.extensions/reviews-v3 created
+service/productpage created
+deployment.extensions/productpage-v1 created
+
+```
+
+Let's go ahead and verify that the appropriate components got installed:
+
+```
+$ kubectl get services
+NAME          CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+details       10.0.130.153   <none>        9080/TCP   6m
+kubernetes    10.0.0.1       <none>        443/TCP    1d
+productpage   10.0.254.100   <none>        9080/TCP   6m
+ratings       10.0.178.102   <none>        9080/TCP   6m
+reviews       10.0.112.9     <none>        9080/TCP   6m
+```
