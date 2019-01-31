@@ -130,3 +130,51 @@ Notice that the `reviews` pods has various versions. We will be taking a closer 
 **Why Better ?** - A Gateway allows Istio features such as monitoring and route rules to be applied to traffic entering the cluster.
 
 ![ingress gateway](./images/ingressgateway.png)
+
+As you can see from the image above, the deployment of BookInfo on the Azure Kubernetes Service is automatically resulted in a layer 4 load balancer getting deployed, thus exposing a publicly accessible IP address.
+
+You can either go to the Kubernetes dashboard or you can issue the following command:
+
+```bash
+kubectl get svc istio-ingressgateway -n istio-system
+```
+
+The result should look something like this:
+
+```bash
+NAME                   CLUSTER-IP   EXTERNAL-IP     PORT(S)                                                                                                                   AGE
+istio-ingressgateway   10.0.5.12    13.66.153.102   80:31380/TCP,443:31390/TCP,31400:31400/TCP,15011:30095/TCP,8060:31630/TCP,853:32106/TCP,15030:30937/TCP,15031:30425/TCP   1d
+```
+
+## Determining the ingress IP and port
+
+Browser enabled - you need to make the application accessible from outside of your Kubernetes cluster, e.g., from a browser. An Istio Gateway is used for this purpose.
+
+**Define a gateway** - The command below can create ingress gateway for the application:
+
+```
+$ kubectl apply -f samples/bookinfo/networking/bookinfo-gateway.yaml
+```
+
+**Confirm the gateway** -  with the following command.
+
+```
+kubectl get gateway
+```
+
+You should see the gateway:
+
+```
+NAME               AGE
+bookinfo-gateway   32s
+```
+
+### Confirming with the Browser
+
+| Public IP Address | URL
+|:--|:---|
+| 13.66.153.102 | http://13.66.153.102/productpage|
+
+
+![Product Page](./images/productpage.png)
+
