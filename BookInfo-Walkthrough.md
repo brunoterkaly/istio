@@ -96,6 +96,7 @@ Let's go ahead and verify that the appropriate components got installed:
 
 ```
 $ kubectl get services
+
 NAME          CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
 details       10.0.130.153   <none>        9080/TCP   6m
 kubernetes    10.0.0.1       <none>        443/TCP    1d
@@ -103,3 +104,29 @@ productpage   10.0.254.100   <none>        9080/TCP   6m
 ratings       10.0.178.102   <none>        9080/TCP   6m
 reviews       10.0.112.9     <none>        9080/TCP   6m
 ```
+
+You can also check the part as follows:
+
+```
+$ kubectl get pods
+
+NAME                              READY     STATUS    RESTARTS   AGE
+details-v1-5458f64c65-zkzf5       2/2       Running   0          9m
+productpage-v1-577c9594b7-s9jsw   2/2       Running   0          9m
+ratings-v1-79467df9b5-8gs8z       2/2       Running   0          9m
+reviews-v1-5d46b744bd-bdh84       2/2       Running   0          9m
+reviews-v2-7f7d7f99f7-xfm25       2/2       Running   0          9m
+reviews-v3-7bc67f66-zpt64         2/2       Running   0          9m
+```
+
+Notice that the `reviews` pods has various versions. We will be taking a closer look at this with the upcoming demos, where we route a specific version of traffic to specific versions of the `release` microservice.
+
+## Control Ingress Traffic
+
+**The typical way to exposing services** - The Kubernetes Ingress Resource is used to specify services that should be exposed outside the cluster. 
+
+**The better approach** - In an Istio service mesh, a better approach is to use Istio Gateway. 
+
+**Why Better ?** - A Gateway allows Istio features such as monitoring and route rules to be applied to traffic entering the cluster.
+
+![ingress gateway](./images/ingressgateway.png)

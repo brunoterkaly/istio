@@ -21,15 +21,15 @@ The following diagram shows the different components that make up each plane:
 
 **Features** - Istio leverages Envoy’s many built-in features, for example:
 
-    Dynamic service discovery
-    Load balancing
-    TLS termination
-    HTTP/2 and gRPC proxies
-    Circuit breakers
-    Health checks
-    Staged rollouts with %-based traffic split
-    Fault injection
-    Rich metrics
+- Dynamic service discovery
+- Load balancing
+- TLS termination
+- HTTP/2 and gRPC proxies
+- Circuit breakers
+- Health checks
+- Staged rollouts with %-based traffic split
+- Fault injection
+- Rich metrics
 
 **Envoy is a sidecar** - It is deployed as a sidecar to the relevant service in the same Kubernetes pod. 
 
