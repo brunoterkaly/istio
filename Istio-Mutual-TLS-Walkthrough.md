@@ -19,9 +19,12 @@ If attempts are made by apps in the ns=bar to reach other apps in other namespac
 
 
 Applications
- - httpbin
- - sleep
+    
+- httpbin
+- sleep
+
 Namespaces
+
  - foo
     - httpbin
     - sleep
@@ -32,72 +35,85 @@ Namespaces
     - httpbin
     - sleep
 
-### Provisioning apps (httpbin, sleep) for Namespace = foo
+ **Provisioning apps (httpbin, sleep) for Namespace = foo**
 
 Create a  namespace
-    - kubectl create ns foo
-    - ns=foo
+
+- kubectl create ns foo
+- ns=foo
+
 Provision httpbin in Namespace=foo
+
 - kubectl apply -f <(istioctl kube-inject -f samples/httpbin/httpbin.yaml) -n foo
 - Service=httpbin, Pod=httpbin, Namespace=foo
 - Includes Istio sidecar container
+
 Provision sleep in Namespace=foo
+
 - kubectl apply -f <(istioctl kube-inject -f samples/sleep/sleep.yaml) -n foo
 - Service=sleep, Pod=sleep, Namespace=foo
 - Includes Istio sidecar container
 
-### Provisioning apps (httpbin, sleep) for Namespace = bar
+**Provisioning apps (httpbin, sleep) for Namespace = bar**
 
 Create a  namespace
+
 - kubectl create ns bar
 - ns=bar
+
 Provision httpbin in Namespace=bar
+
 - kubectl apply -f <(istioctl kube-inject -f samples/httpbin/httpbin.yaml) -n bar
 - Service=httpbin, Pod=httpbin, Namespace=bar
 - Includes Istio sidecar container
+
 Provision sleep in Namespace=bar
+
 - kubectl apply -f <(istioctl kube-inject -f samples/sleep/sleep.yaml) -n bar
 - Service=sleep, Pod=sleep, Namespace=bar
 - Includes Istio sidecar container
 
 
-### Provisioning apps (httpbin, sleep) for Namespace = legacy
+**Provisioning apps (httpbin, sleep) for Namespace = legacy**
 
 Create a  namespace
+
 - kubectl create ns legacy
 - ns=legacy
+
 Provision httpbin in Namespace=legacy
+
 - kubectl apply -f samples/httpbin/httpbin.yaml -n legacy
 - Service=httpbin, Pod=httpbin, Namespace=legacy
 - Includes Istio sidecar container
+
 Provision sleep in Namespace=legacy
+
 - kubectl apply -f < samples/sleep/sleep.yaml -n legacy
 - Service=sleep, Pod=sleep, Namespace=legacy
 - Does NOT include Istio sidecar container
 
 
-Get the name of a pod
-- kubectl get pod -l app=sleep -n bar -o jsonpath= {.items..metadata.name}
 
- Get the containers in a pod
-- kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath='{.spec.containers[*].name}'
+**Some key commands**
 
- Get information for Kubernetes Service INTERNAL endpoint
-  kubectl get services httpbin -o wide -n foo
-- Internal Endpoint = Service Name + Namespace + Port
+> Get the name of a pod
+> - kubectl get pod -l app=sleep -n bar -o jsonpath= {.items..metadata.name}
+> 
+>  Get the containers in a pod
+> - kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath='{.spec.containers[*].name}'
+> 
+>  Get information for Kubernetes Service INTERNAL endpoint
+>   kubectl get services httpbin -o wide -n foo
+> - Internal Endpoint = Service Name + Namespace + Port
+> 
+>  Remote into a container that is in a specific pod and namespace
+> - kubectl exec -it sleep-7dc47f96b6-7dfld -n bar --container sleep -- /bin/sh
+> 
+> Issue Curl command against Internal Endpoint of httpbin service
+> - curl http://httpbin.foo:8000 -w "%{http_code}\n"
 
- Remote into a container that is in a specific pod and namespace
-- kubectl exec -it sleep-7dc47f96b6-7dfld -n bar --container sleep -- /bin/sh
-
-Issue Curl command against Internal Endpoint of httpbin service
-- curl http://httpbin.foo:8000 -w "%{http_code}\n"
-
-
-
-
-WORKING ON THE STUFF BELOW
-
-Provision 3 namespaces: (1) foo; (2) bar; (3) legacy. foo and bar have Istio support. `Legacy` does not.
+## Provision 3 namespaces: (1) foo; (2) bar; (3) legacy. foo and bar have Istio support. `Legacy` does not.**
 
 Let's provision all the apps in all the namespaces.
 
