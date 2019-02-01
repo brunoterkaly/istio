@@ -25,3 +25,14 @@
 ![](./images/layer-7-routing.png)
 
 **Let's learn more about traffic routing** - This post walks through a technique that highlights a particularly useful way that you can implement Istio incrementally – in this case, only the traffic management features – without having to individually update each of your Pods.
+
+![](./images/traffic-routing-explained.png)
+
+
+**Forced Delays** - You can also introduce delays into the calling of your backend services for the purpose of testing timeouts in client requests.
+
+![](./images/delay.png)
+
+
+
+
