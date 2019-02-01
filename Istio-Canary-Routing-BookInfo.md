@@ -141,9 +141,9 @@ Open up a browser and paste in the IP address following productpage route (http:
 
 When pointing the browser to application URL the application’s main page can be seen and refreshing it reveals the different application versions, without ratings (v1), with black star ratings (v2) and red star ratings (v3)
 
-(./images/bookinfo-istio-aks-canary-v1.png)
-(./images/bookinfo-istio-aks-canary-v2.png)
-(./images/bookinfo-istio-aks-canary-v3.png)
+[](./images/bookinfo-istio-aks-canary-v1.png)
+[](./images/bookinfo-istio-aks-canary-v2.png)
+[](./images/bookinfo-istio-aks-canary-v3.png)
 
 ## Configuring Request Routing
 
