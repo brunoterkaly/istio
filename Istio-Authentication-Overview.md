@@ -220,10 +220,6 @@ kubectl exec -it sleep-7dc47f96b6-7dfld -n bar -- /bin/sh
 ```
 Results:
 
-```
-Defaulting container name to sleep.
-Use 'kubectl describe pod/sleep-7dc47f96b6-7dfld' to see all of the containers in this pod.
-```
 We can now put together the necessary pieces.
 
 ```
@@ -241,7 +237,7 @@ httpbin   10.0.103.141   <none>        8000/TCP   1h        app=httpbin
 **Result** - http://httbin.foo:8000
 
 ```
-$ # curl http://httpbin.foo:8000p -w "%{http_code}\n"
+$ # curl http://httpbin.foo:8000 -w "%{http_code}\n"
 ```
 
 Results show that we were able to get an http status 200, which means, `OK`.
