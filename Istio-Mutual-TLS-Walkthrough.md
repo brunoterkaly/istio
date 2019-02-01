@@ -514,3 +514,46 @@ Use 'kubectl describe pod/sleep-7dc47f96b6-7dfld' to see all of the containers i
 ### Success! 
 
 As you can see from the commands above, Re-running the testing allows all requests between Istio-services to be completed successfully.
+
+## But should still should be off-limits to legacy apps
+
+Those applications not running under the Istio fabric should be prevented from accessing cluster resources.
+
+
+
+```
+kubectl get pod -l app=sleep -n legacy -o jsonpath={.items..metadata.name}
+```
+
+ ### Remote into a container that is in a specific pod and namespace
+   
+```
+kubectl exec -it sleep-7dc47f96b6-7dfld -n legacy -- /bin/sh
+sleep-86cf99dfd6-ckndw
+```
+
+####  Executing inside container - ready for command
+
+```
+Defaulting container name to sleep.
+Use 'kubectl describe pod/sleep-86cf99dfd6-ckndw' to see all of the containers in this pod.
+/ # 
+```
+
+```
+/ curl http://httpbin.foo:8000 -w "%{http_code}\n"
+```
+
+### Curl command works! (`200` means `ok` as http code)
+
+```
+(6) Could not resolve host: httbin.foo 000
+curl: (56) Recv failure: Connection reset by peer
+```
+
+### Success again!
+
+so the results above are in alignment with our expectations. We do support service to service communication, as long as it is within the service mesh/Istio environment. The `legacy` namespace, however, was created outside the service mesh/Istio environment. Therefore, any applications from inside the `legacy` namespace are unable to communicate with any of the services that run within the service mesh. 
+
+
+
