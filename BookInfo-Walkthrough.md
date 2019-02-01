@@ -180,3 +180,19 @@ bookinfo-gateway   32s
 
 ![Product Page](./images/productpage.png)
 
+## Cleaning up and removing BookInfo
+
+**To uninstall from Kubernetes environment** - Delete the routing rules and terminate the application pods
+
+```
+$ samples/bookinfo/platform/kube/cleanup.sh
+```
+
+### Confirm shutdown
+
+```
+$ kubectl get virtualservices   #-- there should be no virtual services
+$ kubectl get destinationrules  #-- there should be no destination rules
+$ kubectl get gateway           #-- there should be no gateway
+$ kubectl get pods               #-- the Bookinfo pods should be deleted
+```
