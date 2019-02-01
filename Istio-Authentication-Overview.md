@@ -152,14 +152,107 @@ spec:
 
 Let's now verify that there is no Mutual TLS that we could communicate among pods and containers.
 
+
+
+**Namespace = Foo**
+
+![ns-foo](./images/foo-httpbin.png)
+
+
 ```
 $ kubectl exec $(kubectl get pod -l app=sleep -n bar -o jsonpath={.items..metadata.name}) -c sleep -n bar -- curl http://httpbin.foo:8000/ip -s -o /dev/null -w "%{http_code}\n"
 ```
+List out information about a pod:
+
+|Command| Label(s) | Namespace | 
+|-----|-----|-----|
+|Get matching pods |app=sleep|bar|
+
 
 ```
-kubectl get pod -l app=sleep -n bar -o jsonpath={.items..metadata.name}
-# RESULTING POD
-sleep-7dc
+kubectl get pod -l app=sleep -n bar -o jsonpath=
+{.items..metadata.name}
 ```
+
+Resulting pod
+
+```
+sleep-7dc47f96b6-7dfld
+```
+List out the containers in the `sleep` pod.
+**Goal** - Get containers in pod
+
+- **Pod** - sleep-7dc47f96b6-7dfld
+
+- **Namespace of Pod** - bar
+
+- **Syntax to get container** - jsonpath='{.spec.containers[*].name}'
+
+
+```
+kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath='{.spec.containers[*].name}'
+```
+Results are two containers:
+
+```
+'sleep istio-proxy'
+```
+
 
 Let's remote into that container so we can do a `curl` command against the app 
+
+```
+$ kubectl exec -it sleep-7dc47f96b6-7dfld -n bar --container sleep -- /bin/sh
+```
+Now that we are in the `sleep` container, do a `curl`.
+
+But before we issue the curl command, we need to target a specific container in the pod.
+
+What is important now is to try to access the internal endpoint using the `curl` command.
+
+The internal endpoint is composed of 3 pieces.
+- Service Name
+- Namespace
+- Port
+
+```
+kubectl exec -it sleep-7dc47f96b6-7dfld -n bar -- /bin/sh
+```
+Results:
+
+```
+Defaulting container name to sleep.
+Use 'kubectl describe pod/sleep-7dc47f96b6-7dfld' to see all of the containers in this pod.
+```
+We can now put together the necessary pieces.
+
+```
+kubectl get services httpbin -o wide -n foo
+NAME      CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE       SELECTOR
+httpbin   10.0.103.141   <none>        8000/TCP   1h        app=httpbin
+```
+
+**Service Name** - httpbin
+
+**Namespace** - foo
+
+**Port** - 8000
+
+**Result** - http://httbin.foo:8000
+
+```
+$ # curl http://httpbin.foo:8000p -w "%{http_code}\n"
+```
+
+Results show that we were able to get an http status 200, which means, `OK`.
+
+```
+[omitted for brevity]
+<p><a href="http://python-requests.org" data-bare-link="true">http://python-requests.org</a></p>
+</div>
+</body>
+</html>
+**200**
+```
+
+
