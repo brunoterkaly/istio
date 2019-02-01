@@ -234,7 +234,7 @@ httpbin   10.0.103.141   <none>        8000/TCP   1h        app=httpbin
 
 **Port** - 8000
 
-**Result** - http://httbin.foo:8000
+**Result** - http://httpbin.foo:8000
 
 ```
 $ # curl http://httpbin.foo:8000 -w "%{http_code}\n"
