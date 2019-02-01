@@ -97,7 +97,9 @@ Issue Curl command against Internal Endpoint of httpbin service
 
 WORKING ON THE STUFF BELOW
 
+Provision 3 namespaces: (1) foo; (2) bar; (3) legacy. foo and bar have Istio support. `Legacy` does not.
 
+Let's provision all the apps in all the namespaces.
 
 ```bash
 $ kubectl create ns foo
@@ -111,7 +113,7 @@ $ kubectl apply -f samples/httpbin/httpbin.yaml -n legacy
 $ kubectl apply -f samples/sleep/sleep.yaml -n legacy
 ```
 
-The results:
+The output from the above commands.
 
 ```bash
 namespace/foo created
@@ -138,6 +140,10 @@ namespace/legacy created
 ```
 
 ## Let's review the pods and services deployed
+
+Let's make sure we understand the httpbin app and the sleep app. Here are the yaml files. Be aware that the Envoy proxy (sidecar) will be added to the namespaces foo and bar. 
+
+Below you can see these are simple apps. httpbin is a Python web site and sleep gives us the ability to issue `curl` commands.
 
 ### httpbin.yaml
 
@@ -211,57 +217,38 @@ spec:
 ---
 ```
 
+## Start to verify that no mutual TLS - we CAN do curl commands
+
 Let's now verify that there is no Mutual TLS that we could communicate among pods and containers.
 
+Begin by issuing a command from one namespace to another:
+- Source = NS=bar, APP=sleep, PURPOSE=Try to reach destination NS=foo
+- Destination = NS=foo, APP=httpbin, PURPOSE=Respond to source
 
+You will need to issue a `kubectl exec` into the sleep container.
 
-**Namespace = Foo**
-
-![ns-foo](./images/foo-httpbin.png)
-
-
-List out information about a pod:
-
-|Command| Label(s) | Namespace | 
-|-----|-----|-----|
-|Get matching pods |app=sleep|bar|
-
+### Get the name of a pod
 
 ```
-kubectl get pod -l app=sleep -n bar -o jsonpath=
-{.items..metadata.name}
+kubectl get pod -l app=sleep -n bar -o jsonpath={.items..metadata.name}
 ```
 
-Resulting pod
-
-```
-sleep-7dc47f96b6-7dfld
-```
-List out the containers in the `sleep` pod.
-**Goal** - Get containers in pod
-
-- **Pod** - sleep-7dc47f96b6-7dfld
-
-- **Namespace of Pod** - bar
-
-- **Syntax to get container** - jsonpath='{.spec.containers[*].name}'
+> sleep-7dc47f96b6-7dfld
 
 
-```
+ ### Get the containers in a pod
+
+ 
+ ```
 kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath='{.spec.containers[*].name}'
 ```
-Results are two containers:
 
-```
-'sleep istio-proxy'
-```
+> 'sleep istio-proxy'
 
 
-Let's remote into that container so we can do a `curl` command against the app 
 
-```
-$ kubectl exec -it sleep-7dc47f96b6-7dfld -n bar --container sleep -- /bin/sh
-```
+ ### Get information for Kubernetes Service INTERNAL endpoint
+ 
 Now that we are in the `sleep` container, do a `curl`.
 
 But before we issue the curl command, we need to target a specific container in the pod.
@@ -273,18 +260,13 @@ The internal endpoint is composed of 3 pieces.
 - Namespace
 - Port
 
-```
-kubectl exec -it sleep-7dc47f96b6-7dfld -n bar -- /bin/sh
-```
-Results:
-
-We can now put together the necessary pieces.
-
-```
+ ```
 kubectl get services httpbin -o wide -n foo
-NAME      CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE       SELECTOR
-httpbin   10.0.103.141   <none>        8000/TCP   1h        app=httpbin
 ```
+
+> NAME      CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE       SELECTOR
+> httpbin   10.0.103.141   <none>        8000/TCP   12h       app=httpbin
+
 
 **Service Name** - httpbin
 
@@ -292,23 +274,42 @@ httpbin   10.0.103.141   <none>        8000/TCP   1h        app=httpbin
 
 **Port** - 8000
 
-**Result** - http://httpbin.foo:8000
+**Result** - http://httbin.foo:8000
 
 ```
 $ # curl http://httpbin.foo:8000 -w "%{http_code}\n"
 ```
 
-Results show that we were able to get an http status 200, which means, `OK`. A basic Python web page comes back, some of the first part of the page omitted.
 
+ ### Remote into a container that is in a specific pod and namespace
+   
 ```
-[omitted for brevity]
-<p><a href="http://python-requests.org" data-bare-link="true">http://python-requests.org</a></p>
-</div>
-</body>
-</html>
-**200**
+kubectl exec -it sleep-7dc47f96b6-7dfld -n bar -- /bin/sh
 ```
 
+> Defaulting container name to sleep.
+> Use 'kubectl describe pod/sleep-7dc47f96b6-7dfld' to see all of the containers in this pod.
+> / # 
 
+
+### Issue Curl command against Internal Endpoint of httpbin service
+
+> <h2 id="AUTHOR">AUTHOR</h2>
+> 
+> <p>A <a href="https://www.runscope.com/community">Runscope Community Project</a>.</p>
+> <p>Originally created by <a href="http://kennethreitz.com/">Kenneth Reitz</a>.</p>
+> 
+> <h2 id="SEE-ALSO">SEE ALSO</h2>
+> 
+> <p><a href="https://www.hurl.it">Hurl.it</a> - Make HTTP requests.</p>
+> <p><a href="http://requestb.in">RequestBin</a> - Inspect HTTP requests.</p>
+> <p><a href="http://python-requests.org" data-bare-link="true">http://python-requests.org</a></p>
+> 
+> </div>
+> 
+> 
+> 
+> </body>
+> </html>200
 
 
