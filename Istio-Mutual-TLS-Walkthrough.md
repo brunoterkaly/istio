@@ -113,7 +113,7 @@ Provision sleep in Namespace=legacy
 > Issue Curl command against Internal Endpoint of httpbin service
 > - curl http://httpbin.foo:8000 -w "%{http_code}\n"
 
-## Provision 3 namespaces: (1) foo; (2) bar; (3) legacy. foo and bar have Istio support. `Legacy` does not.**
+**Provision 3 namespaces: (1) foo; (2) bar; (3) legacy. foo and bar have Istio support. `Legacy` does not** 
 
 Let's provision all the apps in all the namespaces.
 
