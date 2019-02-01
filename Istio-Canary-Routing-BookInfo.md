@@ -1,5 +1,9 @@
 # Introducing Canary functionality
 
+For more infomation see:
+https://istio.io/docs/concepts/traffic-management/
+
+
 ![Canary](./images/review-versions.png)
 
 **What is a canary release** - The main purpose of Canary deployments is to reduce the risk of introducing new software and production.
@@ -33,6 +37,26 @@
 
 ![](./images/delay.png)
 
+## Example of Canary version
 
+**% to specific versions** - You can specify via Pilot that you want 5% of traffic for a particular service to go to a canary version irrespective of the size of the canary deployment, or send traffic to a particular version depending on the content of the request.
+
+### What is Pilot?
+
+**Pilot** - Manages and configures all the Envoy proxy instances deployed in a particular Istio service mesh. 
+
+**It is about Rules** - Pilot lets you specify which rules you want to use to route traffic between Envoy proxies and configure failure recovery features such as timeouts, retries, and circuit breakers. 
+
+**Envoys automatically propagate routes** - It also maintains a canonical model of all the services in the mesh and uses this model to let Envoy instances know about the other Envoy instances in the mesh via its discovery service.
+
+**Envoy talk to Pilot** - the load-balancing information in the sidecar is obtained from Pilot.
+
+**Health Checks** - the system does periodic health checks, looking at other instances in the load-balancing pool. This enables intelligent traffic routing.
+
+- When the number of health check failures for a given instance exceeds a pre-specified threshold
+
+## Load Balancing Types
+
+Istio currently allows three load balancing modes: round robin, random, and weighted least request.
 
 
