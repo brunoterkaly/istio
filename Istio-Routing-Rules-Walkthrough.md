@@ -31,6 +31,12 @@ kubectl apply -f samples/bookinfo/networking/destination-rule-all.yaml
 
 A DestinationRule configures the set of policies to be applied to a request after VirtualService routing has occurred. They are intended to be authored by service owners, describing the circuit breakers, load balancer settings, TLS settings, and other settings.
 
+Below not all versions of the rating service have been deployed.
+
+They are available at github should the need arise.
+
+![](./images/ratings-versions.png)
+
 
 ```yaml
 apiVersion: networking.istio.io/v1alpha3
