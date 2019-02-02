@@ -23,11 +23,13 @@ https://istio.io/docs/concepts/traffic-management/
 
 ![v1 and v2](./images/v1-and-v2.png)
 
-This is necessary
+This is necessary and needs to be explained.
 
 ```
 kubectl apply -f samples/bookinfo/networking/destination-rule-all.yaml
 ```
+
+A DestinationRule configures the set of policies to be applied to a request after VirtualService routing has occurred. They are intended to be authored by service owners, describing the circuit breakers, load balancer settings, TLS settings, and other settings.
 
 
 ```yaml
