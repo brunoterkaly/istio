@@ -20,32 +20,6 @@ One of the areas that we will explore here is being able to route traffic to var
 
 ![Canary](./images/review-versions.png)
 
-## Basic HTTPS support
-
-You can create a Yaml file of kind: Gateway that provide support for HTTPS for specific hosts in your network, allowing you to define server certificates and private keys.
-
-> See https://istio.io/docs/tasks/traffic-management/secure-ingress/.  Any company with a public facing web application should read this section carefully.
-
-### Example Yaml file for HTTPS
-```
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  name: bookinfo-gateway
-spec:
-  servers:
-  - port:
-      number: 443
-      name: https
-      protocol: HTTPS
-    hosts:
-    - bookinfo.com
-    tls:
-      mode: SIMPLE
-      serverCertificate: /tmp/tls.crt
-      privateKey: /tmp/tls.key
-```
-
 
 ## A brief description of the major components
 
@@ -168,12 +142,42 @@ spec:
 
 ```
 
-Evidence that traffic only routed to reviews v1. As you recall. v1 has no stars, v2 has black stars, and v3 has red stars.
+## Basic HTTPS support
 
-![](./images/only-reviews-v1.png)
+You can create a Yaml file of kind: Gateway that provide support for HTTPS for specific hosts in your network, allowing you to define server certificates and private keys.
+
+> See https://istio.io/docs/tasks/traffic-management/secure-ingress/.  Any company with a public facing web application should read this section carefully.
+
+### Example Yaml file for HTTPS 
+
+Your typical port assignment of 443 with certificates and host names.
+
+```
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: bookinfo-gateway
+spec:
+  servers:
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    hosts:
+    - bookinfo.com
+    tls:
+      mode: SIMPLE
+      serverCertificate: /tmp/tls.crt
+      privateKey: /tmp/tls.key
+```
+
 
 
 ## Send 100% of incoming traffic to version 1 of reviews using the VirtualService
+
+The Yaml below directs 100% of the traffic to v1 or the reviews micro service.
+
+As indicated above, you need to apply that laundry list of destination rules above for the code below to work.
 
 ```yaml
 apiVersion: networking.istio.io/v1alpha3
@@ -190,24 +194,10 @@ spec:
         subset: v1
 ```
 
+Once this Yaml code is applied, all traffic will be routed only to v1.
 
-### Random Load balancer
+Evidence that traffic only routed to reviews v1. As you recall. v1 has no stars, v2 has black stars, and v3 has red stars.
 
-```
-apiVersion: networking.istio.io/v1alpha3
-kind: DestinationRule
-metadata:
-  name: reviews
-spec:
-  host: reviews
-  trafficPolicy:
-    loadBalancer:
-      simple: RANDOM
-  subsets:
-  - name: v1
-    labels:
-      version: v1
-  - name: v2
-    labels:
-      version: v2
-```      
+![](./images/only-reviews-v1.png)
+
+
