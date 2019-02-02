@@ -1,12 +1,60 @@
-# Rule Configuration Walkthrough
+# Routing & Rule Configuration Walkthrough
 
 For more infomation see:
 https://istio.io/docs/concepts/traffic-management/
 
+The Gateway can be thought of as the starting point for the topic of route management. The Gateway is a new concept that replaces the traditional Kubernetes Ingress Controller. That is because the Kubernetes Ingress APIs proved inadequate for Istio's routing needs. 
+
+This new architecture makes it possible to leverage or reuse off the shelf network appliances by simply writing a gateway controller.
+
+The previous version was a layer 7 load balancer, but the new implementation leverages layers four through six. 
+
+Let's take a look at some additional components introduced by Istio.
+
+## Using BookInfo for demonstrating routing capabilities
+
+One of the areas that we will explore here is being able to route traffic to various versions of the `reviews` micro service. 
+
+
+
 
 ![Canary](./images/review-versions.png)
 
-## Example
+## Basic HTTPS support
+
+You can create a Yaml file of kind: Gateway that provide support for HTTPS for specific hosts in your network, allowing you to define server certificates and private keys.
+
+> See https://istio.io/docs/tasks/traffic-management/secure-ingress/.  Any company with a public facing web application should read this section carefully.
+
+### Example Yaml file for HTTPS
+```
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: bookinfo-gateway
+spec:
+  servers:
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    hosts:
+    - bookinfo.com
+    tls:
+      mode: SIMPLE
+      serverCertificate: /tmp/tls.crt
+      privateKey: /tmp/tls.key
+```
+
+
+## A brief description of the major components
+
+There are four traffic management configuration resources in Istio: VirtualService, DestinationRule, ServiceEntry, and Gateway:
+
+
+![v1 and v2](./images/gateways.png)
+
+> Notice the flow: Gateway -> Virtual Service -> DestinationRule -> Service
 
 **A VirtualService** - defines the rules that control how requests for a service are routed within an Istio service mesh.
 - The core routing device.
@@ -18,14 +66,26 @@ https://istio.io/docs/concepts/traffic-management/
  -  For going outside the mesh.
 
 **A Gateway** - configures a load balancer for HTTP/TCP traffic, most commonly operating at the edge of the mesh to enable ingress traffic for an application
+> Can be thought of as a customizable load balancer.
 - For incoming HTTP/TCP traffic from outside the mesh.
+- You can have any number of gateways within the mesh. 
+- You can use the labeling capability of Kubernetes to bind gateways to specific workloads, allowing you to reuse off-the-shelf network appliances.
+  - There is support for writing a simple gateway controller
+   > Basically the load balancer.
+
 
 
 ![v1 and v2](./images/v1-and-v2.png)
 
 This is necessary and needs to be explained.
 
+![](./images/dest-rules.png)
 ```
+
+Below you can see the Yaml code that is used to lay down the provisional destination rules that are needed for the remaining examples.
+
+The command to apply all these destinations rules is:
+
 kubectl apply -f samples/bookinfo/networking/destination-rule-all.yaml
 ```
 
@@ -36,6 +96,10 @@ Below not all versions of the rating service have been deployed.
 They are available at github should the need arise.
 
 ![](./images/ratings-versions.png)
+
+BookInfo needs the following set of `destinationrules` for the rest of the examples to work properly. This is not clearly specified in the Istio documentation.
+
+
 
 
 ```yaml
