@@ -119,6 +119,46 @@ reviews-v2-7f7d7f99f7-xfm25       2/2       Running   0          9m
 reviews-v3-7bc67f66-zpt64         2/2       Running   0          9m
 ```
 
+### The Whole system
+
+```
+kubectl get pods --all-namespaces
+NAMESPACE      NAME                                     READY     STATUS    RESTARTS   AGE
+default        details-v1-5458f64c65-ggw24              2/2       Running   0          17m
+default        productpage-v1-577c9594b7-7z72z          2/2       Running   0          17m
+default        ratings-v1-79467df9b5-wmdff              2/2       Running   0          17m
+default        reviews-v1-5d46b744bd-68qqh              2/2       Running   0          17m
+default        reviews-v2-7f7d7f99f7-n27pl              2/2       Running   0          17m
+default        reviews-v3-7bc67f66-m4knw                2/2       Running   0          17m
+istio-system   istio-citadel-55cdfdd57c-f7d56           1/1       Running   0          20m
+istio-system   istio-egressgateway-7798845f5d-6b2js     1/1       Running   0          20m
+istio-system   istio-galley-76bbb946c8-djz8f            1/1       Running   0          20m
+istio-system   istio-ingressgateway-78c6d8b8d7-x7lks    1/1       Running   0          20m
+istio-system   istio-pilot-5fcb895bff-fdlmm             2/2       Running   0          20m
+istio-system   istio-policy-7b6cc95d7b-bktjl            2/2       Running   0          20m
+istio-system   istio-sidecar-injector-9c6698858-7tjxk   1/1       Running   0          20m
+istio-system   istio-telemetry-bfc9ff784-nbrv5          2/2       Running   0          20m
+istio-system   prometheus-65d6f6b6c-p6sw9               1/1       Running   0          20m
+kube-system    coredns-7d6976d69b-l7d6n                 1/1       Running   0          26m
+kube-system    coredns-7d6976d69b-vpm6p                 1/1       Running   0          29m
+kube-system    coredns-autoscaler-6fcdb7d64-5pwff       1/1       Running   0          29m
+kube-system    heapster-7b66f54b4c-nwx8d                2/2       Running   0          26m
+kube-system    kube-proxy-htqwx                         1/1       Running   0          26m
+kube-system    kube-proxy-vxt9m                         1/1       Running   0          26m
+kube-system    kube-proxy-wlqnz                         1/1       Running   0          26m
+kube-system    kube-svc-redirect-m6vl7                  2/2       Running   0          26m
+kube-system    kube-svc-redirect-wmdzm                  2/2       Running   0          26m
+kube-system    kube-svc-redirect-wxcs9                  2/2       Running   0          26m
+kube-system    kubernetes-dashboard-dfbbfd8-jp7t5       1/1       Running   0          29m
+kube-system    metrics-server-7b97f9cd9-4nntm           1/1       Running   0          29m
+kube-system    omsagent-6njcm                           1/1       Running   0          26m
+kube-system    omsagent-8dgh7                           1/1       Running   0          26m
+kube-system    omsagent-d54kj                           1/1       Running   0          26m
+kube-system    omsagent-rs-cdf89dbf9-c2c99              1/1       Running   0          29m
+kube-system    tiller-deploy-776b5cb874-nwlmp           1/1       Running   0          21m
+kube-system    tunnelfront-86c95cbf6c-64clx             1/1       Running   0          29m
+```
+
 Notice that the `reviews` pods has various versions. We will be taking a closer look at this with the upcoming demos, where we route a specific version of traffic to specific versions of the `release` microservice.
 
 ## Control Ingress Traffic
