@@ -23,6 +23,15 @@ https://istio.io/docs/concepts/traffic-management/
 
 ![v1 and v2](./images/v1-and-v2.png)
 
+This is necessary
+
+```
+kubectl apply -f samples/bookinfo/networking/destination-rule-all.yaml
+```
+
+Evidence that traffic only routed to reviews v1. As you recall. v1 has no stars, v2 has black stars, and v3 has red stars.
+
+![](./images/only-reviews-v1.png)
 
 
 ## Send 100% of incoming traffic to version 1 of reviews using the `VirtualService`
@@ -42,9 +51,6 @@ spec:
         subset: v1
 ```
 
-The code above actually had the effect of breaking all the book reviews.
-
-![v1 errors](./images/errors-v1.png)
 
 ### Random Load balancer
 
