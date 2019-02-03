@@ -1,10 +1,7 @@
-# ========================================
-# IGNORE BELOW
-# ========================================
-
 
 # Misc Commands 
 
+```
 kubectl apply -f <(istioctl kube-inject -f samples/bookinfo/kube/bookinfo.yaml)
 kubectl apply -f <(istioctl kube-inject -f samples/bookinfo/kube/bookinfo.yaml)
 kubectl create -f < (istioctl kube-inject -f bookinfo.yaml)
@@ -122,4 +119,5 @@ rm -Rf /home/azureuser/helmcharts
 rm -r helm-prometheus/
 snap install helm --classic
 vim install-helm.sh
-xvzf helm-v2.12.1-linux-amd64.tar.gz
+tar xvzf helm-v2.12.1-linux-amd64.tar.gz
+```
