@@ -87,6 +87,10 @@ spec:
 ```
 # Using the Fortio Load Testing Service to Trigger Circuit Breaker
 
+Fortio will be learned for the load testing. You can learn more at Github.
+
+![fortio](./images/fortio.png)
+
 Here is a simple GET request that will not trigger the circuit breaker.
 
 ```
@@ -98,7 +102,7 @@ Status 200 comes back.
 
 # Two Steps left - (1) Perform a higher stress load est ing script (2) Query the Istio Proxy for the performance Statistics
 
-This first command 
+This first command like
 
 kubectl exec -it $FORTIO_POD  -c fortio /usr/local/bin/fortio -- load -c 3 -qps 0 -n 20 -loglevel Warning http://httpbin:8000/get
 kubectl exec -it $FORTIO_POD  -c istio-proxy  -- sh -c 'curl localhost:15000/stats' | grep httpbin | grep pending
