@@ -248,22 +248,22 @@ You will need to issue a `kubectl exec` into the sleep container.
 
 ```
 kubectl get pod -l app=sleep -n bar -o jsonpath={.items..metadata.name}
+ sleep-7dc47f96b6-7dfld
 ```
 
-> sleep-7dc47f96b6-7dfld
 
-
- ### Get the containers in a pod
+### Get the containers in a pod
 
  
  ```
 kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath='{.spec.containers[*].name}'
+
+sleep istio-proxy'
 ```
 
-> 'sleep istio-proxy'
 
 
- ### Get information for Kubernetes Service INTERNAL endpoint
+### Get information for Kubernetes Service INTERNAL endpoint
  
 Now that we are in the `sleep` container, do a `curl`.
 
