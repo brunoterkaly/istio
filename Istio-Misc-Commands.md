@@ -1,12 +1,9 @@
-
-
 # ========================================
 # IGNORE BELOW
 # ========================================
 
 
-
-# Commands 
+# Misc Commands 
 
 kubectl apply -f <(istioctl kube-inject -f samples/bookinfo/kube/bookinfo.yaml)
 kubectl apply -f <(istioctl kube-inject -f samples/bookinfo/kube/bookinfo.yaml)
