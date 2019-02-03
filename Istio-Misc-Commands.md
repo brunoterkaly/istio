@@ -2,6 +2,81 @@
 # Misc Commands 
 
 ```
+FORTIO_POD=$(kubectl get pod | grep fortio | awk '{ print $1 }')
+history | grep "kubectl.*istioctl"
+history | grep "kubectl.*istioctl" > test.txt & vim test.txt
+history | grep "kubectl.*istioctl" > test.txt && vim test.txt
+kubectl apply -f  all-internal-traffic.yml
+kubectl apply -f circuit-breaker.yml
+kubectl apply -f default-mesh-policy.yml
+kubectl apply -f install/kubernetes/helm/helm-service-account.yaml
+kubectl apply -f <(istioctl kube-inject -f samples/bookinfo/kube/bookinfo.yaml)
+kubectl apply -f <(istioctl kube-inject -f samples/bookinfo/platform/kube/bookinfo.yaml)
+kubectl apply -f <(istioctl kube-inject -f samples/httpbin/httpbin.yaml) -n bar
+kubectl apply -f <(istioctl kube-inject -f samples/httpbin/httpbin.yaml) -n foo
+kubectl apply -f <(istioctl kube-inject -f samples/httpbin/sample-client/fortio-deploy.yaml)
+kubectl apply -f <(istioctl kube-inject -f samples/sleep/sleep.yaml) -n bar
+kubectl apply -f <(istioctl kube-inject -f samples/sleep/sleep.yaml) -n foo
+kubectl apply -f kubernetes/step-1-create-voting-app.yaml --namespace voting
+kubectl apply -f kubernetes/step-2-update-voting-analytics-to-1.1.yaml --namespace voting
+kubectl apply -f kubernetes/step-3-update-voting-app-with-new-storage.yaml --namespace voting
+kubectl apply -f samples/bookinfo/networking/bookinfo-gateway.yaml
+kubectl apply -f samples/bookinfo/networking/destination-rule-all.yaml
+kubectl apply -f samples/httpbin/httpbin.yaml -n legacy
+kubectl apply -f < samples/sleep/sleep.yaml -n legacy
+kubectl apply -f samples/sleep/sleep.yaml -n legacy
+kubectl create clusterrolebinding kubernetes-dashboard --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
+kubectl create -f < (istioctl kube-inject -f bookinfo.yaml)
+kubectl create -f <(istioctl kube-inject -f bookinfo.yaml)
+kubectl create -f <(istioctl kube-inject -f $(BOOKINFOYAML))
+kubectl create -f <(istioctl kube-inject -f ${BOOKINFOYAML})
+kubectl create namespace voting
+kubectl create ns bar
+kubectl create ns foo
+kubectl create ns legacy
+kubectl delete deploy httpbin fortio-deploy
+kubectl delete destinationrule httpbin
+kubectl delete -f circuit-breaker.yml
+kubectl delete svc httpbin
+kubectl describe pod voting-app-1-0-6c65c4bdd4-bdmld --namespace voting
+kubectl exec -it $FORTIO_POD  -c fortio /usr/local/bin/fortio -- load -c 2 -qps 0 -n 20 -loglevel Warning http://httpbin:8000/get
+kubectl exec -it $FORTIO_POD  -c fortio /usr/local/bin/fortio -- load -c 3 -qps 0 -n 20 -loglevel Warning http://httpbin:8000/get
+kubectl exec -it $FORTIO_POD  -c fortio /usr/local/bin/fortio -- load -curl  http://httpbin:8000/get
+kubectl exec -it $FORTIO_POD  -c istio-proxy  -- sh -c 'curl localhost:15000/stats' | grep httpbin | grep pending
+kubectl exec -it sleep-7dc47f96b6-7dfld -n bar -- /bin/sh
+- kubectl exec -it sleep-7dc47f96b6-7dfld -n bar --container sleep -- /bin/sh
+kubectl exec -it sleep-7dc47f96b6-7dfld -n bar --container sleep -- /bin/sh
+kubectl exec -it sleep-7dc47f96b6-7dfld -n legacy -- /bin/sh
+kubectl get destinationrule httpbin -o yaml
+kubectl get destinationrules.networking.istio.io --all-namespaces -o yaml
+kubectl get destinationrules.networking.istio.io --all-namespaces -o yaml | grep "host:"
+kubectl get destinationrules  #-- there should be no destination rules
+kubectl get gateway
+kubectl get gateway           #-- there should be no gateway
+kubectl get meshpolicies.authentication.istio.io
+kubectl get pod -l app=sleep -n bar -o jsonpath= {.items..metadata.name}
+kubectl get pod -l app=sleep -n bar -o jsonpath={.items..metadata.name}
+kubectl get pod -l app=sleep -n legacy -o jsonpath={.items..metadata.name}
+kubectl get pods
+kubectl get pods --all-namespaces
+kubectl get pods --namespace voting
+kubectl get pods -n istio-system
+kubectl get pods -n voting
+kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath='{.spec.containers[*].name}'
+kubectl get pods               #-- the Bookinfo pods should be deleted
+kubectl get policies.authentication.istio.io --all-namespaces
+kubectl get service istio-ingressgateway --namespace istio-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+kubectl get services
+kubectl get services httpbin -o wide -n foo
+kubectl get svc istio-ingressgateway -n istio-system
+kubectl get virtualservices   #-- there should be no virtual services
+kubectl.kubernetes.io/last-applied-configuration: |
+kubectl label namespace voting istio-injection=enabled
+kubectl proxy
+
+
+
+
 kubectl apply -f <(istioctl kube-inject -f samples/bookinfo/kube/bookinfo.yaml)
 kubectl apply -f <(istioctl kube-inject -f samples/bookinfo/kube/bookinfo.yaml)
 kubectl create -f < (istioctl kube-inject -f bookinfo.yaml)
