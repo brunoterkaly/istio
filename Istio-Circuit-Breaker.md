@@ -89,6 +89,10 @@ spec:
 
 Fortio will be learned for the load testing. You can learn more at Github.
 
+Fortio runs at a specified query per second (qps) and records an histogram of execution time and calculates percentiles (e.g. p99 ie the response time such as 99% of the requests take less than that number (in seconds, SI unit)). It can run for a set duration, for a fixed number of calls, or until interrupted (at a constant target QPS, or max speed/load per connection/thread).
+
+The name fortio comes from greek φορτίο which means load/burden.
+
 ![fortio](./images/fortio.png)
 
 Here is a simple GET request that will not trigger the circuit breaker.
@@ -96,28 +100,33 @@ Here is a simple GET request that will not trigger the circuit breaker.
 ```
 FORTIO_POD=$(kubectl get pod | grep fortio | awk '{ print $1 }')
 echo $FORTIO_POD
+fortio-deploy-5d5c6bf6b9-c6jvt
 kubectl exec -it $FORTIO_POD  -c fortio /usr/local/bin/fortio -- load -curl  http://httpbin:8000/get
-```
 Status 200 comes back.
+```
 
 # Two Steps left - (1) Perform a higher stress load est ing script (2) Query the Istio Proxy for the performance Statistics
 
 This first command like
 
+```
 kubectl exec -it $FORTIO_POD  -c fortio /usr/local/bin/fortio -- load -c 3 -qps 0 -n 20 -loglevel Warning http://httpbin:8000/get
+```
+
+```
 kubectl exec -it $FORTIO_POD  -c istio-proxy  -- sh -c 'curl localhost:15000/stats' | grep httpbin | grep pending
+```
 
-export FORTIO_POD=$(kubectl get pod | grep fortio | awk '{ print $1 }')
-echo $FORTIO_POD
-kubectl exec -it $FORTIO_POD  -c fortio /usr/local/bin/fortio -- load -curl  http://httpbin:8000/get
-
-root-> echo $FORTIO_POD
-fortio-deploy-5d5c6bf6b9-c6jvt
 
 PERFORM SOME LOAD TESTING
 
-root-> kubectl exec -it $FORTIO_POD  -c fortio /usr/local/bin/fortio -- load -c 3 -qps 0 -n 20 -loglevel Warning http://httpbin:8000/get
+```
+kubectl exec -it $FORTIO_POD  -c fortio /usr/local/bin/fortio -- load -c 3 -qps 0 -n 20 -loglevel Warning http://httpbin:8000/get
+```
 
+You can see the detailed output.
+
+```
 02:23:16 I logger.go:97> Log level is now 3 Warning (was 2 Info)
 Fortio 1.0.1 running at 0 queries per second, 2->2 procs, for 20 calls: http://httpbin:8000/get
 Starting at max qps with 3 thread(s) [gomax 2] for exactly 20 calls (6 per thread + 2)
@@ -156,34 +165,23 @@ Code 503 : 12 (60.0 %)
 Response Header Sizes : count 20 avg 92.1 +/- 112.8 min 0 max 231 sum 1842
 Response Body/Total Sizes : count 20 avg 370 +/- 184.1 min 217 max 596 sum 7400
 All done 20 calls (plus 0 warmup) 5.685 ms avg, 481.1 qps
+```
 
-root-> kubectl exec -it $FORTIO_POD  -c istio-proxy  -- sh -c 'curl localhost:15000/stats' | grep httpbin | grep pending
+This next command checks the istio-proxy for some stats.
+
+```
+kubectl exec -it $FORTIO_POD  -c istio-proxy  -- sh -c 'curl localhost:15000/stats' | grep httpbin | grep pending
+```
+The results:
+
+```
 cluster.outbound|8000||httpbin.default.svc.cluster.local.upstream_rq_pending_active: 0
 cluster.outbound|8000||httpbin.default.svc.cluster.local.upstream_rq_pending_failure_eject: 0
 
 // Pending overflow below
 cluster.outbound|8000||httpbin.default.svc.cluster.local.upstream_rq_pending_overflow: 11
 cluster.outbound|8000||httpbin.default.svc.cluster.local.upstream_rq_pending_total: 10
-
-
-Curl simple and view destination code
-Curl at scale and view destination code
-
-
-
-kubectl apply -f <(istioctl kube-inject -f samples/sleep/sleep.yaml)
-
-
-curl http://httpbin:8000/get -w "%{http_code}\n" 2>&1 | tail -1
-
-kubectl get prods 
-Find the `sleep` pod and copy the the whole name
-
-
-> - kubectl exec -it sleep-7dc47f96b6-7dfld -n bar --container sleep -- /bin/sh
-
-
-
+```
 
 
 # ========================================
