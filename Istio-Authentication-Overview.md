@@ -3,11 +3,17 @@
 ## 2 Types of Istio Authentication Auth
 
 **Type 1: Transport authentication** - Also known as service-to-service authentication: verifies the direct client making the connection. 
+
  - **TLS (Transport Layer Security)** - is the standard Internet Security protocol, successor of SSL (Secure Socket Layer)
+
  - **Secure Comm** - It is used to provide secured connections for communications done over Internet and in private cluster.
+
  - **Integrity** - It provides privacy & integrity of data between two applications communicating with each other.
+
 - **Istio provides** - a key management system to automate key and certificate generation, distribution, and rotation.
+
 - **Istio Offers Mutual TLS** - Istio offers mutual TLS as a full stack solution for transport authentication.
+
     - **Mutual TLS** - Also known as a two-way authentication refers to two parties authenticating each other at the same time, being a default mode of authentication in some 
     - **x509** - is used for authentication.
 

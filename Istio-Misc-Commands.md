@@ -1,8 +1,11 @@
 
 # Misc Commands 
 
-```
-FORTIO_POD=$(kubectl get pod | grep fortio | awk '{ print $1 }')
+Sommand commands I'm collecting.
+
+```bash
+
+FORTIO_POD=$(kubectl get pod | grep fortio | awk "{ print $1 }")
 history | grep "kubectl.*istioctl"
 history | grep "kubectl.*istioctl" > test.txt & vim test.txt
 history | grep "kubectl.*istioctl" > test.txt && vim test.txt
@@ -42,7 +45,7 @@ kubectl describe pod voting-app-1-0-6c65c4bdd4-bdmld --namespace voting
 kubectl exec -it $FORTIO_POD  -c fortio /usr/local/bin/fortio -- load -c 2 -qps 0 -n 20 -loglevel Warning http://httpbin:8000/get
 kubectl exec -it $FORTIO_POD  -c fortio /usr/local/bin/fortio -- load -c 3 -qps 0 -n 20 -loglevel Warning http://httpbin:8000/get
 kubectl exec -it $FORTIO_POD  -c fortio /usr/local/bin/fortio -- load -curl  http://httpbin:8000/get
-kubectl exec -it $FORTIO_POD  -c istio-proxy  -- sh -c 'curl localhost:15000/stats' | grep httpbin | grep pending
+kubectl exec -it $FORTIO_POD  -c istio-proxy  -- sh -c "curl localhost:15000/stats" | grep httpbin | grep pending
 kubectl exec -it sleep-7dc47f96b6-7dfld -n bar -- /bin/sh
 - kubectl exec -it sleep-7dc47f96b6-7dfld -n bar --container sleep -- /bin/sh
 kubectl exec -it sleep-7dc47f96b6-7dfld -n bar --container sleep -- /bin/sh
@@ -62,10 +65,10 @@ kubectl get pods --all-namespaces
 kubectl get pods --namespace voting
 kubectl get pods -n istio-system
 kubectl get pods -n voting
-kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath='{.spec.containers[*].name}'
+kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath="{.spec.containers[*].name}"
 kubectl get pods               #-- the Bookinfo pods should be deleted
 kubectl get policies.authentication.istio.io --all-namespaces
-kubectl get service istio-ingressgateway --namespace istio-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+kubectl get service istio-ingressgateway --namespace istio-system -o jsonpath="{.status.loadBalancer.ingress[0].ip}"
 kubectl get services
 kubectl get services httpbin -o wide -n foo
 kubectl get svc istio-ingressgateway -n istio-system
@@ -96,7 +99,7 @@ kubectl apply -f <(istioctl kube-inject -f samples/httpbin/httpbin.yaml) -n bar
 kubectl apply -f <(istioctl kube-inject -f samples/sleep/sleep.yaml) -n bar
 kubectl apply -f < samples/sleep/sleep.yaml -n legacy
 kubectl get pod -l app=sleep -n bar -o jsonpath= {.items..metadata.name}
-kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath='{.spec.containers[*].name}'
+kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath="{.spec.containers[*].name}"
 kubectl exec -it sleep-7dc47f96b6-7dfld -n bar --container sleep -- /bin/sh
 kubectl create ns foo
 kubectl apply -f <(istioctl kube-inject -f samples/httpbin/httpbin.yaml) -n foo
@@ -108,7 +111,7 @@ kubectl create ns legacy
 kubectl apply -f samples/httpbin/httpbin.yaml -n legacy
 kubectl apply -f samples/sleep/sleep.yaml -n legacy
 kubectl get pod -l app=sleep -n bar -o jsonpath={.items..metadata.name}
-kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath='{.spec.containers[*].name}'
+kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath="{.spec.containers[*].name}"
 kubectl get services httpbin -o wide -n foo
 kubectl exec -it sleep-7dc47f96b6-7dfld -n bar -- /bin/sh
 kubectl get policies.authentication.istio.io --all-namespaces
@@ -166,8 +169,8 @@ helm list
 helm list --all
 helm ls
 helm ls --all prometheus
-helm ls | awk '{print $1}'
-helm ls | awk '{print $1}' | vim -
+helm ls | awk "{print $1}"
+helm ls | awk "{print $1}" | vim -
 helm repo update
 helm search node-exporter
 helm search prometheus
@@ -196,3 +199,4 @@ snap install helm --classic
 vim install-helm.sh
 tar xvzf helm-v2.12.1-linux-amd64.tar.gz
 ```
+
