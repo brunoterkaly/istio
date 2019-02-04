@@ -73,7 +73,6 @@ Output:
 ...
 ```
 
-
 The reason is that for the workflow “sleep -> sleep-proxy -> nginx-proxy -> nginx”, the whole flow is L7 traffic, and there is a L4 mutual TLS encryption between sleep-proxy and nginx-proxy. In this case, everything works fine.
 
 However, if you run this command from istio-proxy container, it will not work. And it should not.
@@ -91,4 +90,3 @@ $ kubectl delete -f samples/https/nginx-app.yaml
 $ kubectl delete configmap nginxconfigmap
 $ kubectl delete secret nginxsecret
 ```
-

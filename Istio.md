@@ -1,29 +1,645 @@
-# Authentication With Istio Overview
+# Overview
 
-## 2 Types of Istio Authentication Auth
+Naturally, the goal is to make good use out of everybody's time
 
-**Type 1: Transport authentication** - Also known as service-to-service authentication: verifies the direct client making the connection.
- - **TLS (Transport Layer Security)** - is the standard Internet Security protocol, successor of SSL (Secure Socket Layer)
- - **Secure Comm** - It is used to provide secured connections for communications done over Internet and in private cluster.
- - **Integrity** - It provides privacy & integrity of data between two applications communicating with each other.
-- **Istio provides** - a key management system to automate key and certificate generation, distribution, and rotation.
-- **Istio Offers Mutual TLS** - Istio offers mutual TLS as a full stack solution for transport authentication.
-    - **Mutual TLS** - Also known as a two-way authentication refers to two parties authenticating each other at the same time, being a default mode of authentication in some
-    - **x509** - is used for authentication.
+Will begin as a level set with Kubernetes and Istio.
 
-**Type 2: Origin authentication** - Also known as end-user authentication: verifies the original client making the request as an end-user or device.
+## Starting from the beginning
 
-- Message authentication or data origin authentication is a property that a message has not been modified while in transit (data integrity) and that the receiving party can verify the source of the message.
-- The authentication is based on a secret key shared by two parties to authenticate information transmitted between them
-    - **JWT Token** - Istio enables request-level authentication with JSON Web Token (JWT) validation and a streamlined developer experience for Auth0, Firebase Auth, Google Auth, and custom auth.
+**Start with Kubernetes** - In order to be effective as we learn more advanced topics of Service Mesh us, we should know something solid about the architecture of Kubernetes.
 
-**Auth Policies, where stored?** - The authentication policies in the Istio config store via a custom Kubernetes API.
+**Know the internals** - It's important to know its internal components and how Kubernetes itself is set up as a series of running containers in the cluster group together in units called pods - which turns out to be the most fundamental concept in Kubernetes.
 
-**Pilot helps keep things up to date** - Pilot keeps them up-to-date for each proxy, along with the keys where appropriate.
+**Introducing Istio** - Anyone learning Istio needs to understand the basic pillars of Kubernetes.
 
-## Mutual TLS authentication
+**Knowing Kubernetes Well** - All the commands necessary in Kubernetes are required to work effectively in the world of Istio.
 
-**Envoy plays key role** - Istio tunnels service-to-service communication through the client side and server side Envoy proxies
+**Core Istio** - Istio dramatically simplifies the administration of A/B testing, canary releases, rate limiting, access control, monitoring, automatic load-balancing or HTTP, gRPC, WebSocket and TCP Traffic, as well as end to end authentication.
+
+## 6 areas to learn about over the next couple days
+
+**Service Mesh** - Istio is a type of application called a Service Mesh
+
+**Istio Architecture** - what are the core architectural components and how it was implemented. We should learn Istio both from an architectural perspective as well as from a capabilities perspective.
+
+**Traffic Management** - Istio focuses on defining define rules rather than specific routes between pods/VMs. The reason is that you can scale without worrying about specific routes. Relying on rules when you're scaling frees you from the granular details of route tracking.
+
+**Security** - Some pretty compelling features for security.
+
+- Strong identity
+- Flexible network policy
+- Transparent TLS encryption
+- No changes or modifications needed for application code
+- Easy integration with existing security systems
+
+**Policies And Telemetry** - includes a flexible model to enforce authorization policies and to collect telemetry for your services. telemetry there is a plug-in model so there is support for Datadog, Fluentd, CloudWatch, etc.
+
+**Performance And Scalability** - there are two basic supports for benchmarking, the first is micro-benchmarks that rely on Golang's native tools and there is also and two and benchmarks that rely on products such as Fortio.
+
+## Why are we here for 2 days?
+
+**Why and What for 2 days** - The main reasons we are all here together today. Perhaps the first primary goal of any public facing website is to be extremely secure, both internally to the organization, as well as externally from customers or nefarious individuals on the broader web.
+
+## How companies are building scalable applications for the cloud
+
+**Goodbye Monoliths** - Another big trend has been organizations with monolithic architectures to move to a world of microservices.
+
+**Smaller Services** - In general, in the context of Kubernetes and Istio, that means breaking applications into various smaller services that run containerize and pods on Kubernetes.
+
+**Plugging in a Service Mesh** - It also means the products like Istio will come into the picture and add their own containers of applications that represents the entire Service Mesh that Istio is.
+
+## (1) What are the core value propositions of Service Mesh?
+
+In Service Mesh technologies, each service instance of a corporate application is paired with an instance of a reverse proxy server. This reverse proxy server is also known as:
+
+- Service proxy
+- Sidecar proxy
+- Sidecar
+
+## (2) Understanding the pillars of Istio
+
+**What are the core architectural components and how it was implemented** - Show K8s Dashboard
+
+**Sidecars** - In the world of Kubernetes this sidecar runs as another container in the same pod as a corporate application, acting as an intermediary handling all traffic interactions with the corporate application, dispatching and rerouting as necessary.
+
+**Envoy** - In the case of Istio, that sidecar proxy is known as Envoy Proxy (https://www.envoyproxy.io/). Envoy was created by Lyft and is used broadly by some of the biggest companies in the world.
+
+**Envoy handles** - Load balancing and resilience strategies for all internal calls. It provides a coherent layer for observability.
+
+**Envoy provides:**
+
+- Dynamic service discovery
+- Load balancing
+- TLS termination
+- HTTP/2 and gRPC proxies
+- Circuit breakers
+- Health checks
+- Staged rollouts with %-based traffic split
+- Fault injection
+- Rich metrics
+
+Let's continue with examples of what the Service Mesh brings to companies with public facing websites.
+
+**Understanding the data and control planes** -The control and data plans of Istio bring valuable capabilities.
+
+![Istio architecture](./images/arch.png)
+
+## (3) Istio capabilities - Traffic Management
+
+Traffic is Key - First of all it provides control over traffic behavior.
+
+Kubernetes Gaps - Kubernetes by itself does not have every feature necessary for a company building a micro service architecture, such as:
+
+- Rich routing rules, retries, failovers, timeouts, and fault injection.
+
+- API supporting access controls, rate limits and quotas.
+
+- Micro service applications require careful monitoring, logging, and performance analysis.
+
+- Strong identity and authentication support is essential.
+
+**It is really about the rules** - It is important to define rules rather than specific routes between pods/VMs.
+
+**Easier scaling** - The reason is that you can scale without worrying about specific routes. Relying on rules when you're scaling frees you from the granular details of route tracking.
+
+**Implementing canary capabilities** - To implement canary capabilities you simply say I want to route 5% traffic to a specific service. That service could have hundreds of pods that are load balanced across.
+
+**Flexible dynamic routing rules** -  let you create rules based upon:
+
+- headers
+- tags or labels
+- or by percentage weights
+
+**Istio imposes strict control over ingress and egress** - Everything must go through an envoy of the as it enters or leaves the Service Mesh.
+
+**Envoy in the middle** - The fact that the envoy proxy sits in front of your services makes it possible to easily implement:
+
+- A/B Testing
+- Canary services
+
+**Protecting your micro services** - Istio provides capabilities that allow you to protect your macro service application.
+
+**Avoiding cascading failure** - To avoid the cascading effect of failure in micro service architectures, the following Istio provided constructs are powerful:
+
+- Timeouts
+- Retries
+- Circuit breakers
+
+**Relying on the Kubernetes Service Registry** - In terms of keeping their service registry up-to-date, Istio gives this all the Kubernetes to do.
+
+**Istio makes assumptions** - Istio makes the assumption that new instances will be automatically registered with the service registry.
+
+**Fixing pods in poor health** - Istio assumes unhealthy instances will be automatically removed, restarted, and re-added to the service registry.
+
+**Pilot is navigating your cluster network** - Pilot is the Istio component that relies on this service registry. Kubernetes maintains DNS and Istio relies on these names.
+
+**Envoy is always listening and interrupting** - All traffic that is headed for a Kubernetes service is automatically rerouted through envoy, which distributes the traffic across instances in the load balancing pool based on its own sophisticated load-balancing algorithms and the routing rules that you may define.
+
+### Dealing with Failure
+
+We must embrace failure.
+
+**Timeouts** - timeout budgets ensure that the calling service gets a response (success or failure) within a predictable time frame.
+
+**Budgeting** - Bounded retries with timeout budgets
+
+**Clever retries** -  Variable jitter between retries
+
+**How many connections** - Limits on number of concurrent connections
+
+**Upstream services** - Limits requests to upstream services
+
+**Keeping an eye on health** - Active (periodic) health checks on each member of the load balancing pool
+
+**Circuit breakers** - Fine-grained circuit breakers (passive health checks). Applied per instance in the load balancing pool
+
+### Fault injection
+
+From micro service applications it is important to test enter and failure recovery capability
+
+**Poor user experiences** - come from poorly defined timeouts
+
+**Minimize** - High levels of unavailability and critical services
+
+**Forcing Failure** - Istio can inject faults as an alternative to killing and restarting PODS.
+
+**Control HTTP codes in a timely manner** - Istio can return meaningful HTTP codes in a timely manner
+
+**The two fault types** - are `delays` and `aborts` that Istio supports
+
+### Configuring Rules
+
+**A VirtualService** -  defines the rules that control how requests for a service are routed within an Istio service mesh.
+
+**A DestinationRule** - configures the set of policies to be applied to a request after VirtualService routing has occurred.
+
+**A ServiceEntry** - is commonly used to enable requests to services outside of an Istio service mesh.
+
+**A Gateway** - configures a load balancer for HTTP/TCP traffic, most commonly operating at the edge of the mesh to enable ingress traffic for an application.
+
+More Information:
+
+https://istio.io/docs/concepts/traffic-management/
+
+### Some great content around
+
+ - How to split traffic between Release Versions
+
+ - How to implement Timeouts and retries
+
+ - How to implement Injecting Faults to test clients failing
+
+ - How to apply Conditional routing rules
+
+ - How to route based on headers (A rule could be that it applies to an incoming request if it includes a custom “end-user” header that contains the string “jason”)
+
+ - How to decide which routes have more precedencs after routing from the virtual service
+
+   - In other words, which route rules are more powerful than others?
+
+ - Understanding how rules are evaluated. Read the fine print here, "Rule evaluation"
+
+ - How ServiceEntry objects can be used to enable request to services outside of the Service Mesh.
+
+   - The example could be allowing external calls access to a specific wildcard service name like, *.foo.com
+
+ - How gateways can be used to allow traffic to flow. One example is allowing external HTTPS traffic for bookinfo.com
+
+## (4) Istio capabilities - security
+
+**Man in the middle attacks** - To prevent man in the middle attack through traffic encryption
+
+**Mutual TLS** - Supporting Mutual TLS and fine-grained access policies
+
+**Getting audited** - To audit what administrators and applications are doing in the Service Mesh
+
+Learn how:
+
+### Istio security features
+
+- Strong identity
+- Flexible network policy
+- Transparent TLS encryption
+- No changes or modifications needed for application code
+- Easy integration with existing security systems
+
+Learn more here:
+
+https://istio.io/docs/concepts/security/
+
+Understand:
+
+![Security Architecture](./images/sec-architecture.png)
+
+**Citadel** - Key and certificate management is done by `Citadel`
+
+**Side cars** - Secure communication between clients and servers is done by `sidecars` and `perimeter proxies`.
+
+**Pilot** - Management of network and routing policy and naming conventions handled by `pilot`.
+
+**Mixer** - Authentication as well as auditing done by `Mixer`
+
+## Identity and Istio
+
+Learn how:
+
+**Integration with Other Platforms** - Istio can leverage service identities from other platforms, such as TCP, AWS, Kubernetes, and even on premises
+
+**SPIFFE** - Understanding SPIFFE and Istio with the same verifiable identity document
+
+**x509** - Understand the support for PKI, x509
+
+**Some good business practices** - Understanding deployment best practices and guidelines
+
+**Link** - https://istio.io/docs/concepts/security/
+
+**Separating application tiers** - Understand the example on how to separate the front end, the backend, and the data store
+
+**Namespaces for access control** - Understand how creating separate name spaces and how administration can be controlled for each of these three name spaces using several service accounts
+
+**Two forms of authentication** - Understanding the forms of authentication (transport versus origin authentication)
+
+**There is good demo for** - Understanding Mutual TLS authentication
+
+**Pilot and `apiserver`** - Understanding how pilot communicates with the Kubernetes `apiserver` and generates its own secure naming information that it will distributed to the sidecar of envoy proxies.
+
+**Defining authentication policies** - Understand how to create authentication policies through `.yaml` files.
+
+**Pilot is a spy** - Understand how pilot watches configuration storage to notice any policy changes. If it finds any it will send them to each of the envoy sidecars.
+
+See https://istio.io/docs/concepts/security/authn.svg in the section, 'Authentication architecture' to understand more about JWT, mutual TLS and destination rules. There is also a great example that walks you through this.
+
+### Take the time to read https://istio.io/docs/concepts/security/
+
+- Authentication policy target selectors
+
+- Transport authentication
+
+- Origin authentication
+
+- Principal binding
+
+- Large section on authorization RBAC (role-based access control
+
+ - After pilot distributes the authorization policies, the envoy runs an authorization engine that authorizes requests at runtime
+
+## (5) Istio capabilities - policies and telemetry
+
+**Control without drawbacks** - One of the design goal up Istio was a difficult challenge. How do you provide written deep controls to the cluster operator, while minimizing the burden on service developers.
+
+**Reduced complexity** - The end result was a reduction in system complexity, separating policy logic from service code and giving the capability to the cluster operators.
+
+**Mixer supporting policy controls and telemetry data** -  is the component that provides policy controls and to collect telemetry information.
+
+![Mixer supporting policy and telemetry](./images/policies.png)
+
+Mixer provides:
+
+- Logging
+- Monitoring
+- Quotas
+- ACL checking
+
+## (6) Istio capabilities - performance and scalability
+
+There are two types of benchmarks and measure performance:
+
+**Micro-benchmarks** - which are code level
+
+**End to end benchmarks** - that include entire scenarios
+
+**Key Istio goal** - Support for automation to protect from regressions
+
+Things to learn:
+
+**Fortio** - Istio's use of Fortio (100% open source) which is a synthetic, end-to-end load testing tools
+
+**Cool graphs** - Fortio supports user configurable amount of queries per second (QPS)
+
+![Fortio Image](./images/fortio2.png)
+
+![Grab the images here](https://istio.io/docs/concepts/performance-and-scalability/)
+
+**Distributed tracing** - collecting trace bands has always been somewhat challenging. There is an open source project called Jaegar that gives you visual depictions of the way your micro services travel for certain scenarios that you define.
+
+![Yaeger distributed tracing](./images/tracing.png)
+
+**URL for the Yeager dashboard** -  http://localhost:16686
+
+**Support for visualization of performance data** - in combination of both Grafana and Prometheus, it is possible to get beautiful depictions of the performance information for your cluster.
+
+![Istio dashboard](./images/istio-dashboard.png)
+
+## Summary
+
+**Next steps** - we've done a high-level overview of all of the various components that make up Istio.
+
+The next step is to go through some of the examples and actually implement these features using the sample BookInfo.
+
+Most companies are encouraged to start here as long as there's no sensitive corporate applications that will be exposed to the Internet. The BookInfo sample provides a nice set of Micro services to begin your learnings with.
+# Istio Concepts
+
+## Architecture
+
+![Goals](./images/goals.png)
+
+
+An Istio service mesh is logically split into a data plane and a control plane.
+
+- The `data plane` is composed of a set of intelligent proxies (`Envoy`) deployed as sidecars. These proxies mediate and control all network communication between microservices along with `Mixer`, a general-purpose policy and telemetry hub.
+
+- The `control plane` manages and configures the proxies to route traffic. Additionally, the control plane configures `Mixers` to enforce policies and collect telemetry.
+
+The following diagram shows the different components that make up each plane:
+
+
+ ![Envoy](./images/envoy.png)
+
+### Envoy
+
+**Envoy is the Proxy** - Istio uses an extended version of the Envoy proxy. 
+
+**High performance** - Envoy is a high-performance proxy developed in C++ to mediate all inbound and outbound traffic for all services in the service mesh. 
+
+**Features** - Istio leverages Envoy’s many built-in features, for example:
+
+- Dynamic service discovery
+- Load balancing
+- TLS termination
+- HTTP/2 and gRPC proxies
+- Circuit breakers
+- Health checks
+- Staged rollouts with %-based traffic split
+- Fault injection
+- Rich metrics
+
+**Envoy is a sidecar** - It is deployed as a sidecar to the relevant service in the same Kubernetes pod. 
+
+**Knows traffic behavior** - This deployment allows Istio to extract a wealth of signals about traffic behavior as attributes.
+
+**Feed data to Mixer** - Istio can, in turn, use these attributes in Mixer to enforce policy decisions, and send them to monitoring systems to provide information about the behavior of the entire mesh.
+
+**No need to recompile apps** - The sidecar proxy model also allows you to add Istio capabilities to an existing deployment with no need to rearchitect or rewrite code. You can read more about why we chose this approach in our Design Goals.
+
+### Mixer
+
+**Access Control and Usage Policy** - Mixer enforces access control and usage policies across the service mesh, and collects telemetry data from the Envoy proxy and other services. 
+
+**Works with Envoy Proxy** - The proxy extracts request level attributes, and sends them to Mixer for evaluation.
+
+### Citadel
+
+All about authentication - Citadel provides strong service-to-service and end-user authentication with built-in identity and credential management. 
+
+Encrypt Traffic - You can use Citadel to upgrade unencrypted traffic in the service mesh. 
+
+Policy enforcement - Using Citadel, operators can enforce policies based on service identity rather than on network controls.
+
+Authorizing Services -  You can use Istio’s authorization feature to control who can access your services.
+
+### Galley
+
+Galley validates user authored Istio API configuration on behalf of the other Istio control plane components. Over time, Galley will take over responsibility as the top-level configuration ingestion, processing and distribution component of Istio. It will be responsible for insulating the rest of the Istio components from the details of obtaining user configuration from the underlying platform (e.g. Kubernetes).
+
+# Istio Installation
+
+## The steps to install Istio are:
+
+1. Have a Kubernetes cluster (AKS) ready with kubectl configured.
+2. Download Istio
+2. Install Helm and Tiller
+3. Download the Release
+
+### Download Istio
+
+#### https://istio.io/docs/setup/kubernetes/download-release/
+
+```bash
+curl -L https://git.io/getLatestIstio | sh -
+cd istio-1.0.5
+export PATH=$PWD/bin:$PATH
+```
+I updated my `.bashrc` file as follows:
+
+```bash
+export ISTIO="/root/istio/istio-1.0.5/bin"
+export PATH="$PATH:$GOPATH/bin:$GOROOT/bin:$ISTIO"
+source <(kubectl completion bash)
+```
+You may have a different path as I am running as `root` locally.
+
+### Installation with Helm
+
+If a `service account` has not already been installed for Tiller, install one. Be sure to be running Helm v2.12.1:
+
+```bash
+kubectl apply -f install/kubernetes/helm/helm-service-account.yaml
+```
+
+#### Install Tiller on your cluster with the service account:
+
+```bash
+ helm init --service-account tiller
+ ```
+
+#### Install Istio
+
+```bash
+helm install install/kubernetes/helm/istio --name istio --namespace istio-system
+ ```
+
+In my `.bashrc` file I added the ISTIO environment variable.
+
+```bash
+export ISTIO="/root/istio/istio-1.0.5/bin"
+export PATH="$PATH:$ISTIO"
+source <(kubectl completion bash)
+```
+
+## Install with Helm and Tiller via helm install
+
+You can install Tiller on your cluster with the service account:
+
+```bash
+helm init --service-account tiller
+```
+
+### Install Istio:
+
+#### https://istio.io/docs/setup/kubernetes/minimal-install/
+
+```bash
+helm install install/kubernetes/helm/istio --name istio-minimal --namespace istio-system \
+  --set security.enabled=false \
+  --set ingress.enabled=false \
+  --set gateways.istio-ingressgateway.enabled=false \
+  --set gateways.istio-egressgateway.enabled=false \
+  --set galley.enabled=false \
+  --set sidecarInjectorWebhook.enabled=false \
+  --set mixer.enabled=false \
+  --set prometheus.enabled=false \
+  --set global.proxy.envoyStatsd.enabled=false \
+  --set pilot.sidecar=false
+```
+
+**Ensure the istio-pilot-Kubernetes pod is deployed** - Ensure its container is up and running:
+
+```bash
+$ kubectl get pods -n istio-system
+```
+You should see these results:
+
+
+```bash
+NAME                                     READY     STATUS    RESTARTS   AGE
+istio-pilot-58c65f74bc-2f5xn             1/1       Running   0          1m
+```
+
+# Viewing and Understanding the Istio Components
+
+You will need to install the Kubernetes Dashboard.
+
+## Setting up ClusterRole Binding
+
+It is needed to have access to the Dashboard.
+
+```bash
+kubectl create clusterrolebinding kubernetes-dashboard --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
+ ```
+ You will need to enalbe the proxy which let's us tunnel in through `localhost`.
+
+```bash
+kubectl proxy
+Starting to serve on 127.0.0.1:8001
+```
+
+ _Figure: Setting up the proxy_
+
+## Accessing the Dashboard
+
+Now go your browser and enter the following:
+
+```bash
+http://localhost:8001/api/v1/namespaces/kube-system/services/kubernetes-dashboard/proxy/#!/overview?namespace=default
+ ```
+
+ You should see this:
+
+ ![Dashboard](./images/dashboard.png)
+
+## Understanding Istio Inside of Kubernetes
+
+The `istio-system` namespace is where all the components for Istio are stored.
+
+Kubernetes constructs include:
+
+- Deployments
+- Pods
+- Replicasets
+- Services
+- ConfigMaps
+- Secrets
+
+Let's break it down.
+
+### Deployments
+
+A Deployment controller provides declarative updates for Pods and ReplicaSets.
+
+You describe a desired state in a Deployment object, and the Deployment controller changes the actual state to the desired state at a controlled rate. 
+
+You can define Deployments to create new ReplicaSets, or to remove existing Deployments and adopt all their resources with new Deployments.
+
+**istio-citadel** - An optional health-checking feature. In public key infrastructure (PKI) systems, a certificate signing request (also CSR or certification request) is a message sent from an applicant to a certificate authority in order to apply for a digital identity certificate. This service/pod will detect failures in the CSR signing service.
+
+
+**istio-egressgateway** - The Control Egress Traffic task demonstrates how external (outside the Kubernetes cluster) HTTP and HTTPS services can be accessed from applications inside the mesh. 
+ - By default, Istio-enabled applications are unable to access URLs outside the cluster. 
+ - To enable such access, a service entry for the external service must be defined, or, alternatively, direct access to external services must be configured.
+ - The idea is that all traffic that leaves the service mesh must flow through a set of dedicated nodes that are separate from the rest of the nodes used for running applications in the cluster.
+ - The special nodes will serve for policy enforcement on the egress traffic and will be monitored more thoroughly than the rest of the nodes.
+
+**istio-galley** - Galley is the top-level config ingestion, processing and distribution component of Istio. 
+ - It is responsible for insulating the rest of the Istio components from the details of obtaining user configuration from the underlying platform.
+ - A resource is an endpoint in the Kubernetes API that stores a collection of API objects of a certain kind. For example, the built-in pods resource contains a collection of Pod objects.
+ - Configuration options include authorization, traffic routing, policies/telemetry, and authentication policy.
+
+**istio-ingressgateway** - Istio no longer leverages an `Ingress` controller to handle traffic coming into the cluster. It is really a fancy wrapper around the `Envoy` proxy. 
+
+The istio-pilot, explained next, detects changes the istio-ingressgateway, and sends that configuration information to the `Envoy` sidecars for routing.
+
+The istio-ingressgateway is composed of two resources:
+
+ - `Gateway` - Used to configure the ports for `Envoy`. 
+ - `VirtualServices` - Works with `Gateway` to configure `Envoy`.
+
+![ingress-gateway](./images/ingress-gateway.png)
+
+These resources work together. There is a `Istio IngressGateway Service` that is listening on the Loadbalancer. The `istio-gateway` with help from other components configures the ports, protocol, and certificates. 
+
+The load balancer can be configured through the service type: LoadBalancer. Azure supports automatic configuration and  forward traffic to a port that the IngressGateway Service is listening on. 
+
+The `VirtualServices` resource is key. By including a list of gateways, a virtual service tells Istio to configure those gateways with the routes defined in the VirtualService configuration. 
+
+**istio-pilot** - Routing rules are specified that tell Pilot which pods/VMs are to receive traffic. Pilot manages and configures Envoy proxy/sidecar instances. Pilot provides load balancing information to each Envoy instance. Pilot is responsible for the lifecycle of Envoy instances deployed across the Istio service mesh. 
+
+For example, you can specify via Pilot that you want 5% of traffic for a particular service to go to a canary version irrespective of the size of the canary deployment, or send traffic to a particular version depending on the content of the request.
+
+Supports Dynamic request routing for:
+
+- A/B testing
+- Gradual Rollouts
+- Canary Releases
+- Failure recovery with timeouts, retries, circuit breakers, and fault injection
+
+ **istio-policy** - used to enforce authorization policies, specifically enabling, configuring, and using Istio authentication policies.  It includes such things as access control system, telemetry capturing systems, quota enforcement systems, billing systems.
+
+**istio-sidecar-injector** - a sidecar is a pattern.  A Pod is composed of one or more application containers. A sidecar is a utility container in the Pod and its purpose is to support the main container. 
+
+- Istio uses an extended version of the `Envoy proxy`. Envoy is a high-performance proxy developed in C++ to mediate all inbound and outbound traffic for all services in the service mesh.
+
+
+ ![Envoy](./images/envoy.png)
+
+
+
+**istio-telemetry** - used to obtain uniform metrics, logs, traces across the various services. Makes use of Istio Mixer and Istio sidecar.
+
+**prometheus** - collects Istio metrics and makes them available to Prometheus. Prometheus is an open source monitoring solution. See [Prometheus](https://prometheus.io/) link.
+
+### Pods
+
+Explained above in the `Deployment` section. deployments are the higher level object that creates replica sets which create pods. The functional capabilities of these Kubernetes object types are identical.
+
+ ![Deploy](./images/deploy-to-pods.png)
+
+Explained above in the `Deployment` section.
+
+### Replicasets
+
+Explained above in the `Deployment` section.
+
+### Services
+
+Explained above in the `Deployment` section.
+
+### ConfigMaps
+
+`ConfigMaps` allow you to decouple configuration artifacts from image content to keep containerized applications portable.
+
+`ConfigMaps` bind configuration files, command-line arguments, environment variables, port numbers, and other configuration artifacts to your Pods' containers and system components at runtime. 
+
+Here is the list:
+
+istio, istio-galley-configuration, istio-ingress-controller-leader-istio, istio-security-custom-resources, istio-sidecar-injector, istio-statsd-prom-bridge, prometheus 
+
+
+### Secrets
+
+Intended to hold sensitive information, such as passwords, OAuth tokens, and ssh keys. Putting this information in a secret is safer and more flexible than putting it verbatim in a pod definition or in a docker image
+
+default-token-ksp2b, istio-ca-secret, istio-citadel-service-account-token-fwdcs, istio-egressgateway-service-account-token-w8vzt, istio-galley-service-account-token-6wx4l, istio-ingressgateway-service-account-token-kfs29, istio-mixer-service-account-token-8pdlg, istio-pilot-service-account-token-hzxzj, istio-security-post-install-account-token-5kzmj, istio-sidecar-injector-service-account-token-vdf9g, istio.default, istio.istio-citadel-service-account, istio.istio-egressgateway-service-account, istio.istio-galley-service-account, istio.istio-ingressgateway-service-account, istio.istio-mixer-service-account, istio.istio-pilot-service-account, istio.istio-security-post-install-account, istio.istio-sidecar-injector-service-account, istio.prometheus, prometheus-token-bv7kw
+
 # Installing Walkthrough
 
 This example deploys a sample application composed of four separate microservices used to demonstrate various Istio features. The application displays information about a book, similar to a single catalog entry of an online book store. Displayed on the page is a description of the book, book `details` (ISBN, number of pages, and so on), and a few book `reviews`.
@@ -53,6 +669,7 @@ There are some other interesting points to notice about the diagram above:
 ## Deployment of Sidecar
 
 You will also notice in the diagram below that the envoy proxy has been installed into each of the services.
+
 
 ![bookinfo](./images/envoy-bookinfo.png)
 
@@ -99,6 +716,7 @@ it might be worth noting that there is a bash script do the cleanup, `cleanup.sh
 ### Command line to deploy Bookinfo
 
 This particular version of the command is known as `manual sidecar injection` because `kubectl` is combined with `istioctl`.
+
 
 ```/bash
 $ kubectl apply -f <(istioctl kube-inject -f samples/bookinfo/platform/kube/bookinfo.yaml)
@@ -187,9 +805,9 @@ Notice that the `reviews` pods has various versions. We will be taking a closer 
 
 ## Control Ingress Traffic
 
-**The typical way to exposing services** - The Kubernetes Ingress Resource is used to specify services that should be exposed outside the cluster.
+**The typical way to exposing services** - The Kubernetes Ingress Resource is used to specify services that should be exposed outside the cluster. 
 
-**The better approach** - In an Istio service mesh, a better approach is to use Istio Gateway.
+**The better approach** - In an Istio service mesh, a better approach is to use Istio Gateway. 
 
 **Why Better ?** - A Gateway allows Istio features such as monitoring and route rules to be applied to traffic entering the cluster.
 
@@ -212,7 +830,7 @@ istio-ingressgateway   10.0.5.12    13.66.153.108   80:31380/TCP,443:31390/TCP,3
 
 ## Determining the ingress IP and port
 
-**Browser enabled** - you need to make the application accessible from outside of your Kubernetes cluster, e.g., from a browser.
+**Browser enabled** - you need to make the application accessible from outside of your Kubernetes cluster, e.g., from a browser. 
 
 **How to browser-enable** - An Istio Gateway is used for this purpose.
 
@@ -241,6 +859,7 @@ bookinfo-gateway   32s
 |:--|:---|
 | 13.66.153.108 | http://13.66.153.108/productpage|
 
+
 ![Product Page](./images/productpage.png)
 
 ## Cleaning up and removing BookInfo
@@ -259,10 +878,602 @@ $ kubectl get destinationrules  #-- there should be no destination rules
 $ kubectl get gateway           #-- there should be no gateway
 $ kubectl get pods               #-- the Bookinfo pods should be deleted
 ```
+# Authentication With Istio Overview
+
+## 2 Types of Istio Authentication Auth
+
+**Type 1: Transport authentication** - Also known as service-to-service authentication: verifies the direct client making the connection. 
+
+ - **TLS (Transport Layer Security)** - is the standard Internet Security protocol, successor of SSL (Secure Socket Layer)
+
+ - **Secure Comm** - It is used to provide secured connections for communications done over Internet and in private cluster.
+
+ - **Integrity** - It provides privacy & integrity of data between two applications communicating with each other.
+
+- **Istio provides** - a key management system to automate key and certificate generation, distribution, and rotation.
+
+- **Istio Offers Mutual TLS** - Istio offers mutual TLS as a full stack solution for transport authentication.
+
+    - **Mutual TLS** - Also known as a two-way authentication refers to two parties authenticating each other at the same time, being a default mode of authentication in some 
+    - **x509** - is used for authentication.
+
+**Type 2: Origin authentication** - Also known as end-user authentication: verifies the original client making the request as an end-user or device. 
+
+- Message authentication or data origin authentication is a property that a message has not been modified while in transit (data integrity) and that the receiving party can verify the source of the message.
+- The authentication is based on a secret key shared by two parties to authenticate information transmitted between them
+    - **JWT Token** - Istio enables request-level authentication with JSON Web Token (JWT) validation and a streamlined developer experience for Auth0, Firebase Auth, Google Auth, and custom auth.
+
+**Auth Policies, where stored?** - The authentication policies in the Istio config store via a custom Kubernetes API.
+
+**Pilot helps keep things up to date** - Pilot keeps them up-to-date for each proxy, along with the keys where appropriate.
+
+## Mutual TLS authentication
+
+**Envoy plays key role** - Istio tunnels service-to-service communication through the client side and server side Envoy proxies
+# Walkthrough to Understand Mutual TLS
+
+![Mutual TLS](./images/mutual-tls.png)
+
+> You can follow along here as well: https://istio.io/docs/tasks/security/authn-policy/
+
+The purpose of this section is to implement Transport Authentication. The goal is to limit traffic in and out of Kubernetes namespaces.
+
+x509 Certificates will be used for this purpose, supporting two-way authentication with a key management system to automate key and certificate generation, distribution, and rotation.
+
+This will provide privacy & integrity of data between two applications communicating with each other. This will also provide secured connections for both communications done over Internet and in private cluster.
+
+Two namespaces will be provided so we can show that even with Istio installed, Mutual TLS support isn't the default. We  have to turn it on. So in the first part will will show that services across namespaces can talk to each other. 
+
+We will then establish a `Destination Rule` for the ns=bar that disables traffic to the other namespaces, including the ns=legacy.
+
+If attempts are made by apps in the ns=bar to reach other apps in other namespaces, they will be prohibited, getting an HTTP code of 56 (command terminated with exit code 56), instead of 200 (OK).
+
+## Key commands
+
+
+Applications
+    
+- httpbin
+- sleep
+
+Namespaces
+
+ - foo
+    - httpbin
+    - sleep
+ - bar
+    - httpbin
+    - sleep
+ - legacy
+    - httpbin
+    - sleep
+
+ **Provisioning apps (httpbin, sleep) for Namespace = foo**
+
+Create a  namespace
+
+- kubectl create ns foo
+- ns=foo
+
+Provision httpbin in Namespace=foo
+
+- kubectl apply -f <(istioctl kube-inject -f samples/httpbin/httpbin.yaml) -n foo
+- Service=httpbin, Pod=httpbin, Namespace=foo
+- Includes Istio sidecar container
+
+Provision sleep in Namespace=foo
+
+- kubectl apply -f <(istioctl kube-inject -f samples/sleep/sleep.yaml) -n foo
+- Service=sleep, Pod=sleep, Namespace=foo
+- Includes Istio sidecar container
+
+**Provisioning apps (httpbin, sleep) for Namespace = bar**
+
+Create a  namespace
+
+- kubectl create ns bar
+- ns=bar
+
+Provision httpbin in Namespace=bar
+
+- kubectl apply -f <(istioctl kube-inject -f samples/httpbin/httpbin.yaml) -n bar
+- Service=httpbin, Pod=httpbin, Namespace=bar
+- Includes Istio sidecar container
+
+Provision sleep in Namespace=bar
+
+- kubectl apply -f <(istioctl kube-inject -f samples/sleep/sleep.yaml) -n bar
+- Service=sleep, Pod=sleep, Namespace=bar
+- Includes Istio sidecar container
+
+
+**Provisioning apps (httpbin, sleep) for Namespace = legacy**
+
+Create a  namespace
+
+- kubectl create ns legacy
+- ns=legacy
+
+Provision httpbin in Namespace=legacy
+
+- kubectl apply -f samples/httpbin/httpbin.yaml -n legacy
+- Service=httpbin, Pod=httpbin, Namespace=legacy
+- Includes Istio sidecar container
+
+Provision sleep in Namespace=legacy
+
+- kubectl apply -f < samples/sleep/sleep.yaml -n legacy
+- Service=sleep, Pod=sleep, Namespace=legacy
+- Does NOT include Istio sidecar container
+
+
+
+**Some key commands**
+
+> Get the name of a pod
+> - kubectl get pod -l app=sleep -n bar -o jsonpath= {.items..metadata.name}
+> 
+>  Get the containers in a pod
+> - kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath='{.spec.containers[*].name}'
+> 
+>  Get information for Kubernetes Service INTERNAL endpoint
+>   kubectl get services httpbin -o wide -n foo
+> - Internal Endpoint = Service Name + Namespace + Port
+> 
+>  Remote into a container that is in a specific pod and namespace
+> - kubectl exec -it sleep-7dc47f96b6-7dfld -n bar --container sleep -- /bin/sh
+> 
+> Issue Curl command against Internal Endpoint of httpbin service
+> - curl http://httpbin.foo:8000 -w "%{http_code}\n"
+
+**Provision 3 namespaces: (1) foo; (2) bar; (3) legacy. foo and bar have Istio support. `Legacy` does not** 
+
+Let's provision all the apps in all the namespaces.
+
+```bash
+$ kubectl create ns foo
+$ kubectl apply -f <(istioctl kube-inject -f samples/httpbin/httpbin.yaml) -n foo
+$ kubectl apply -f <(istioctl kube-inject -f samples/sleep/sleep.yaml) -n foo
+$ kubectl create ns bar
+$ kubectl apply -f <(istioctl kube-inject -f samples/httpbin/httpbin.yaml) -n bar
+$ kubectl apply -f <(istioctl kube-inject -f samples/sleep/sleep.yaml) -n bar
+$ kubectl create ns legacy
+$ kubectl apply -f samples/httpbin/httpbin.yaml -n legacy
+$ kubectl apply -f samples/sleep/sleep.yaml -n legacy
+```
+
+The output from the above commands.
+
+```bash
+namespace/foo created
+   service/httpbin created
+   deployment.extensions/httpbin created
+
+   service/sleep created
+   deployment.extensions/sleep created
+
+namespace/bar created
+   service/httpbin created
+   deployment.extensions/httpbin created
+
+   service/sleep created
+   deployment.extensions/sleep created
+
+namespace/legacy created
+   service/httpbin created
+   deployment.extensions/httpbin created
+
+   service/sleep created
+   deployment.extensions/sleep created
+
+```
+
+## Let's review the pods and services deployed
+
+Let's make sure we understand the httpbin app and the sleep app. Here are the yaml files. Be aware that the Envoy proxy (sidecar) will be added to the namespaces foo and bar. 
+
+Below you can see these are simple apps. httpbin is a Python web site and sleep gives us the ability to issue `curl` commands.
+
+### httpbin.yaml
+
+```yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: httpbin
+  labels:
+    app: httpbin
+spec:
+  ports:
+  - name: http
+    port: 8000
+  selector:
+    app: httpbin
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: httpbin
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: httpbin
+        version: v1
+    spec:
+      containers:
+      - image: docker.io/citizenstig/httpbin
+        imagePullPolicy: IfNotPresent
+        name: httpbin
+        ports:
+        - containerPort: 8000
+```
+
+
+### sleep.yaml
+
+```yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: sleep
+  labels:
+    app: sleep
+spec:
+  ports:
+  - port: 80
+    name: http
+  selector:
+    app: sleep
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: sleep
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: sleep
+    spec:
+      containers:
+      - name: sleep
+        image: pstauffer/curl
+        command: ["/bin/sleep", "3650d"]
+        imagePullPolicy: IfNotPresent
+---
+```
+
+## Start to verify that no mutual TLS - we CAN do curl commands
+
+Let's now verify that there is no Mutual TLS that we could communicate among namespaces, pods and containers.
+
+Begin by issuing a command from one namespace to another:
+- **Source** = NS=bar, APP=sleep, PURPOSE=Try to reach destination NS=foo
+- **Destination** = NS=foo, APP=httpbin, PURPOSE=Respond to source
+
+You will need to issue a `kubectl exec` into the sleep container.
+
+### Get the name of a pod
+
+```
+kubectl get pod -l app=sleep -n bar -o jsonpath={.items..metadata.name}
+ sleep-7dc47f96b6-7dfld
+```
+
+
+### Get the containers in a pod
+
+ 
+ ```
+kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath='{.spec.containers[*].name}'
+
+sleep istio-proxy'
+```
+
+
+
+### Get information for Kubernetes Service INTERNAL endpoint
+ 
+Now that we are in the `sleep` container, do a `curl`.
+
+But before we issue the curl command, we need to target a specific container in the pod.
+
+What is important now is to try to access the internal endpoint using the `curl` command.
+
+The internal endpoint is composed of 3 pieces.
+
+- Service Name
+- Namespace
+- Port
+
+ ```
+kubectl get services httpbin -o wide -n foo
+```
+
+Here is the output:
+
+```
+NAME      CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE       SELECTOR \
+httpbin   10.0.103.141   <none>        8000/TCP   12h       app=httpbin
+```
+
+**Service Name** - httpbin
+
+**Namespace** - foo
+
+**Port** - 8000
+
+**Result** - http://httbin.foo:8000
+
+
+ ### Remote into a container that is in a specific pod and namespace
+   
+```
+kubectl exec -it sleep-7dc47f96b6-7dfld -n bar -- /bin/sh
+```
+
+####  Executing inside container - ready for command
+
+```
+Defaulting container name to sleep.
+Use 'kubectl describe pod/sleep-7dc47f96b6-7dfld' to see all of the containers in this pod.
+/ # 
+```
+
+```
+/ curl http://httpbin.foo:8000 -w "%{http_code}\n"
+```
+
+### Curl command works! (`200` means `ok` as http code)
+
+```
+<h2 id="AUTHOR">AUTHOR</h2>
+ 
+ </body>
+ </html>200
+```
+
+## Turn Mutual TLS on and build DestinationRule
+
+Let us begin by verifying there are no authentication policies.
+
+```
+kubectl get policies.authentication.istio.io --all-namespaces
+```
+
+Empty results:
+
+```
+No resources found.
+```
+
+Check  that there are no mesh policies.
+
+```
+kubectl get meshpolicies.authentication.istio.io
+NAME      KIND
+default   MeshPolicy.v1alpha1.authentication.istio.io
+
+```
+
+
+```
+kubectl get destinationrules.networking.istio.io --all-namespaces -o yaml | grep "host:"
+    host: istio-policy.istio-system.svc.cluster.local
+    host: istio-telemetry.istio-system.svc.cluster.local
+```
+**No destination rules** - Verify that there are no destination rules that apply on the example services. 
+
+**Check `host:` value** -  You can do this by checking the host: value of existing destination rules and make sure they do not match. For example:
+
+```
+kubectl get destinationrules.networking.istio.io --all-namespaces -o yaml
+
+**RESULTS:**
+
+apiVersion: v1
+items:
+- apiVersion: networking.istio.io/v1alpha3
+  kind: DestinationRule
+  metadata:
+    creationTimestamp: 2019-01-30T04:46:58Z
+    generation: 1
+    name: istio-policy
+    namespace: istio-system
+    resourceVersion: "22419"
+    selfLink: /apis/networking.istio.io/v1alpha3/namespaces/istio-system/destinationrules/istio-policy
+    uid: 136ad272-244a-11e9-bdd7-8a8dfb8de0fa
+  spec:
+    host: istio-policy.istio-system.svc.cluster.local
+    trafficPolicy:
+      connectionPool:
+        http:
+          http2MaxRequests: 10000
+          maxRequestsPerConnection: 10000
+- apiVersion: networking.istio.io/v1alpha3
+  kind: DestinationRule
+  metadata:
+    creationTimestamp: 2019-01-30T04:46:58Z
+    generation: 1
+    name: istio-telemetry
+    namespace: istio-system
+    resourceVersion: "22415"
+    selfLink: /apis/networking.istio.io/v1alpha3/namespaces/istio-system/destinationrules/istio-telemetry
+    uid: 135a6652-244a-11e9-bdd7-8a8dfb8de0fa
+  spec:
+    host: istio-telemetry.istio-system.svc.cluster.local
+    trafficPolicy:
+      connectionPool:
+        http:
+          http2MaxRequests: 10000
+          maxRequestsPerConnection: 10000
+kind: List
+metadata: {}
+resourceVersion: ""
+selfLink: ""
+```
+
+
+## Globally enabling Mutual TLS
+
+The next step is to submit a mass authentication policy. We will do this by creating a YAML files. The policy we create will specify that all workloads in the mesh will ONLY accept TLS encrypted requests. 
+
+As you can see, this authentication policy has the kind: MeshPolicy. The name of the policy must be default, and it contains no targets specification (as it is intended to apply to all services in the mesh).
+
+Notice the `kind:` as seen below:
+
+#### default-mesh-policy.yaml
+
+```
+apiVersion: "authentication.istio.io/v1alpha1"
+kind: "MeshPolicy"
+metadata:
+  name: "default"
+spec:
+  peers:
+  - mtls: {}
+EOF
+```
+
+### Require TLS for all communications
+
+In this next test we are going to apply the rule that we just discussed, thereby preventing a `curl` command from succeeding from one container to another.
+
+```
+kubectl apply -f default-mesh-policy.yml
+
+meshpolicy.authentication.istio.io/default configured
+```
+
+Get back inside the sleep service in ns=bar.
+
+```
+kubectl exec -it sleep-7dc47f96b6-7dfld -n bar -- /bin/sh
+```
+
+Issue the command to the `httpbin` in the `foo` namespace.
+
+```
+/ curl http://httpbin.foo:8000 -w "%{http_code}\n"
+```
+
+At this point, only the receiving side is configured to use mutual TLS. If you run the curl command between Istio services (i.e those with sidecars), all requests will fail with a 503 error code as the client side is still using plain-text.
+
+> upstream connect error or disconnect/reset before headers
+> Error 503
+
+## Configuring Destination rules
+
+you can set up routing destination rules. using these rules you would be able to limit matches to only services in the cluster. This means that external services would not be able to communicate with services in the cluster.
+
+These destination rules are also set up for non-authorization type of reasons. For example they can be used for `canarying.`
+
+Allow internal traffic in cluster with Mutual TLS.
+
+```
+apiVersion: "networking.istio.io/v1alpha3"
+kind: "DestinationRule"
+metadata:
+  name: "default"
+  namespace: "default"
+spec:
+  host: "*.local"
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+```
+
+Run the YAML file:
+
+```
+kubectl apply -f  all-internal-traffic.yml
+destinationrule "default" created
+```
+
+Now we can see if we can once again hit an internal endpoint (httpbin from sleep).
+
+
+ ### Remote into a container that is in a specific pod and namespace
+   
+```
+kubectl exec -it sleep-7dc47f96b6-7dfld -n bar -- /bin/sh
+```
+
+####  Executing inside container - ready for command
+
+```
+Defaulting container name to sleep.
+Use 'kubectl describe pod/sleep-7dc47f96b6-7dfld' to see all of the containers in this pod.
+/ # 
+```
+
+```
+/ curl http://httpbin.foo:8000 -w "%{http_code}\n"
+```
+
+### Curl command works! (`200` means `ok` as http code)
+
+```
+<h2 id="AUTHOR">AUTHOR</h2>
+ 
+ </body>
+ </html>200
+```
+
+### Success! 
+
+As you can see from the commands above, Re-running the testing allows all requests between Istio-services to be completed successfully.
+
+## But should still should be off-limits to legacy apps
+
+Those applications not running under the Istio fabric should be prevented from accessing cluster resources.
+
+
+
+```
+kubectl get pod -l app=sleep -n legacy -o jsonpath={.items..metadata.name}
+```
+
+ ### Remote into a container that is in a specific pod and namespace
+   
+```
+kubectl exec -it sleep-7dc47f96b6-7dfld -n legacy -- /bin/sh
+sleep-86cf99dfd6-ckndw
+```
+
+####  Executing inside container - ready for command
+
+```
+Defaulting container name to sleep.
+Use 'kubectl describe pod/sleep-86cf99dfd6-ckndw' to see all of the containers in this pod.
+/ # 
+```
+
+```
+/ curl http://httpbin.foo:8000 -w "%{http_code}\n"
+```
+
+### Curl command works! (`200` means `ok` as http code)
+
+```
+(6) Could not resolve host: httbin.foo 000
+curl: (56) Recv failure: Connection reset by peer
+```
+
+### Success again!
+
+so the results above are in alignment with our expectations. We do support service to service communication, as long as it is within the service mesh/Istio environment. The `legacy` namespace, however, was created outside the service mesh/Istio environment. Therefore, any applications from inside the `legacy` namespace are unable to communicate with any of the services that run within the service mesh. 
+
+
+
 # Introducing Canary functionality
 
 For more infomation see:
 https://istio.io/docs/concepts/traffic-management/
+
 
 ![Canary](./images/review-versions.png)
 
@@ -276,7 +1487,8 @@ https://istio.io/docs/concepts/traffic-management/
 
 **Test with Internal Users** - The idea is that internal users could do the test first on a subset in the world of Blue Green deployment. only when the internal users agree that the functionality and behavior is appropriate, do you start rerouting traffic from the old deployment to the new deployment.
 
-**Simple Example** -  Istio, you can specify that v1 of a service receives 90% of incoming traffic, while v2 of that service only receives 10%.
+
+**Simple Example** -  Istio, you can specify that v1 of a service receives 90% of incoming traffic, while v2 of that service only receives 10%. 
 
 **Keep both versions** -Using Istio you can deploy v2 of your service and use built-in traffic management mechanisms to shift traffic to your updated services at a network level, then remove the v1 Pods.
 
@@ -291,6 +1503,7 @@ https://istio.io/docs/concepts/traffic-management/
 
 ![](./images/traffic-routing-explained.png)
 
+
 **Forced Delays** - You can also introduce delays into the calling of your backend services for the purpose of testing timeouts in client requests.
 
 ![](./images/delay.png)
@@ -301,9 +1514,9 @@ https://istio.io/docs/concepts/traffic-management/
 
 ### What is Pilot?
 
-**Pilot** - Manages and configures all the Envoy proxy instances deployed in a particular Istio service mesh.
+**Pilot** - Manages and configures all the Envoy proxy instances deployed in a particular Istio service mesh. 
 
-**It is about Rules** - Pilot lets you specify which rules you want to use to route traffic between Envoy proxies and configure failure recovery features such as timeouts, retries, and circuit breakers.
+**It is about Rules** - Pilot lets you specify which rules you want to use to route traffic between Envoy proxies and configure failure recovery features such as timeouts, retries, and circuit breakers. 
 
 **Envoys automatically propagate routes** - It also maintains a canonical model of all the services in the mesh and uses this model to let Envoy instances know about the other Envoy instances in the mesh via its discovery service.
 
@@ -317,343 +1530,211 @@ https://istio.io/docs/concepts/traffic-management/
 
 Istio currently allows three load balancing modes: round robin, random, and weighted least request.
 
-## Prerequisite
 
-> * created an AKS cluster (Kubernetes 1.10 and above, with RBAC enabled) [AKS quickstart](https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/aks/kubernetes-walkthrough.md)
-> * An established `kubectl` connection with the cluster
-> * Istio installed in your cluster [install Istio in AKS](https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/aks/istio-install.md)
+# Routing & Rule Configuration Walkthrough
 
-## About this application scenario
+For more infomation see:
+https://istio.io/docs/concepts/traffic-management/
 
-The sample AKS voting app provides two voting options (Cats or Dogs) to users. There is a storage component that persists the number of votes for each option. Additionally, there is an analytics component that provides details around the votes cast for each option.
+The Gateway can be thought of as the starting point for the topic of route management. The Gateway is a new concept that replaces the traditional Kubernetes Ingress Controller. That is because the Kubernetes Ingress APIs proved inadequate for Istio's routing needs. 
 
-In this article, you start by deploying version *1.0* of the voting app and version *1.0* of the analytics component. The analytics component provides simple counts for the number of votes. The voting app and analytics component interact with version *1.0* of the storage component, which is backed by Redis.
+This new architecture makes it possible to leverage or reuse off the shelf network appliances by simply writing a gateway controller.
 
-You upgrade the analytics component to version *1.1*, which provides counts, and now totals and percentages.
+The previous version was a layer 7 load balancer, but the new implementation leverages layers four through six. 
 
-A subset of users test version *2.0* of the app via a canary release. This new version uses a storage component that is backed by a MySQL database.
+Let's take a look at some additional components introduced by Istio.
 
-Once you're confident that version *2.0* works as expected on your subset of users, you roll out version *2.0* to all your users.
+## Using BookInfo for demonstrating routing capabilities
 
-## Deploy the application
+One of the areas that we will explore here is being able to route traffic to various versions of the `reviews` micro service. 
 
-Let's start by deploying the application into your Azure Kubernetes Service (AKS) cluster. The following diagram shows what runs by the end of this section - version *1.0* of all components with inbound requests serviced via the Istio ingress gateway:
 
-![The AKS Voting app components and routing.](./images/components-and-routing-01.png)
 
-The artifacts you need to follow along with this article are available in the [Azure-Samples/aks-voting-app](https://github.com/Azure-Samples/aks-voting-app) GitHub repo. You can either download the artifacts or clone the repo as follows:
 
-```console
-git clone https://github.com/Azure-Samples/aks-voting-app.git
+![Canary](./images/review-versions.png)
+
+
+## A brief description of the major components
+
+There are four traffic management configuration resources in Istio: VirtualService, DestinationRule, ServiceEntry, and Gateway:
+
+
+![v1 and v2](./images/gateways.png)
+
+> Notice the flow: Gateway -> Virtual Service -> DestinationRule -> Service
+
+**A VirtualService** - defines the rules that control how requests for a service are routed within an Istio service mesh.
+- The core routing device.
+
+**A DestinationRule** - configures the set of policies to be applied to a request after VirtualService routing has occurred.
+- Key word, "after"
+
+**A ServiceEntry** - is commonly used to enable requests to services outside of an Istio service mesh.
+ -  For going outside the mesh.
+
+**A Gateway** - configures a load balancer for HTTP/TCP traffic, most commonly operating at the edge of the mesh to enable ingress traffic for an application
+> Can be thought of as a customizable load balancer.
+- For incoming HTTP/TCP traffic from outside the mesh.
+- You can have any number of gateways within the mesh. 
+- You can use the labeling capability of Kubernetes to bind gateways to specific workloads, allowing you to reuse off-the-shelf network appliances.
+  - There is support for writing a simple gateway controller
+   > Basically the load balancer.
+
+
+
+![v1 and v2](./images/v1-and-v2.png)
+
+This is necessary and needs to be explained.
+
+![](./images/dest-rules.png)
 ```
 
-Change to the following folder in the downloaded / cloned repo and run all subsequent steps from this folder:
+Below you can see the Yaml code that is used to lay down the provisional destination rules that are needed for the remaining examples.
 
-```console
-cd scenarios/intelligent-routing-with-istio
+The command to apply all these destinations rules is:
+
+kubectl apply -f samples/bookinfo/networking/destination-rule-all.yaml
 ```
 
-First, create a namespace in your AKS cluster for the sample AKS voting app named *voting* as follows:
+A DestinationRule configures the set of policies to be applied to a request after VirtualService routing has occurred. They are intended to be authored by service owners, describing the circuit breakers, load balancer settings, TLS settings, and other settings.
 
-```console
-kubectl create namespace voting
-```
+Below not all versions of the rating service have been deployed.
 
-Label the namespace with `istio-injection=enabled`. This label instructs Istio to automatically inject the istio-proxies as sidecars into all of your pods in this namespace.
+They are available at github should the need arise.
 
-```console
-kubectl label namespace voting istio-injection=enabled
-```
+![](./images/ratings-versions.png)
 
-Now let's create the components for the AKS Voting app. Create these components in the *voting* namespace created in a previous step.
+BookInfo needs the following set of `destinationrules` for the rest of the examples to work properly. This is not clearly specified in the Istio documentation.
 
-```console
-kubectl apply -f kubernetes/step-1-create-voting-app.yaml --namespace voting
-```
 
-The following example output shows the resources were successfully created:
 
-```
-deployment.apps/voting-storage-1-0 created
-service/voting-storage created
-deployment.apps/voting-analytics-1-0 created
-service/voting-analytics created
-deployment.apps/voting-app-1-0 created
-service/voting-app created
-```
 
-> [!NOTE]
-> Istio has some specific requirements around pods and services. For more information, see the [Istio Requirements for Pods and Services documentation](https://istio.io/docs/setup/kubernetes/spec-requirements/).
-
-To see the pods that have been created, use the [kubectl get pods](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#get) command as follows:
-
-```console
-kubectl get pods -n voting
-```
-
-The following example output shows there are three instances of the *voting-app* pod and a single instance of both the *voting-analytics* and *voting-storage* pods. Each of the pods has two containers. One of these containers is the component, and the other is the *istio-proxy*:
-
-```
-NAME                                    READY     STATUS    RESTARTS   AGE
-voting-analytics-1-0-669f99dcc8-lzh7k   2/2       Running   0          1m
-voting-app-1-0-6c65c4bdd4-bdmld         2/2       Running   0          1m
-voting-app-1-0-6c65c4bdd4-gcrng         2/2       Running   0          1m
-voting-app-1-0-6c65c4bdd4-strzc         2/2       Running   0          1m
-voting-storage-1-0-7954799d96-5fv9r     2/2       Running   0          1m
-```
-
-To see information about the pod, use the [kubectl describe pod](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#describe). Replace the pod name with the name of a pod in your own AKS cluster from the previous output:
-
-```console
-kubectl describe pod voting-app-1-0-6c65c4bdd4-bdmld --namespace voting
-```
-
-The *istio-proxy* container has automatically been injected by Istio to manage the network traffic to and from your components, as shown in the following example output:
-
-```
-[...]
-Containers:
-  voting-app:
-    Image:         mcr.microsoft.com/aks/samples/voting/app:1.0
-    ...
-  istio-proxy:
-    Image:         docker.io/istio/proxyv2:1.0.4
-[...]
-```
-
-You can't connect to the voting app until you create the Istio Gateway and Virtual Service. These Istio resources route traffic from the default Istio ingress gateway to our application.
-
-> [!NOTE]
-> A *Gateway* is a component at the edge of the service mesh that receives inbound or outbound HTTP and TCP traffic.
->
-> A *Virtual Service* defines a set of routing rules for one or more destination services.
-
-Use the `istioctl` client binary to deploy the Gateway and Virtual Service yaml. As with the `kubectl apply` command, remember to specify the namespace that these resources are deployed into.
-
-```console
-istioctl create -f istio/step-1-create-voting-app-gateway.yaml --namespace voting
-```
-
-Obtain the IP address of the Istio Ingress Gateway using the following command:
-
-```console
-kubectl get service istio-ingressgateway --namespace istio-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
-```
-
-The following example output shows the IP address of the Ingress Gateway:
+```yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: productpage
+spec:
+  host: productpage
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: reviews
+spec:
+  host: reviews
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
+  - name: v3
+    labels:
+      version: v3
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: ratings
+spec:
+  host: ratings
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
+  - name: v2-mysql
+    labels:
+      version: v2-mysql
+  - name: v2-mysql-vm
+    labels:
+      version: v2-mysql-vm
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: details
+spec:
+  host: details
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
+---
 
 ```
-52.187.250.239
-```
 
-Open up a browser and paste in the IP address. The sample AKS voting app is displayed.
+## Basic HTTPS support
 
-![The AKS Voting app running in our Istio enabled AKS cluster.](./images/deploy-app-01.png)
+You can create a Yaml file of kind: Gateway that provide support for HTTPS for specific hosts in your network, allowing you to define server certificates and private keys.
 
-The information at the bottom of the screen shows that the app uses version *1.0* of the *voting-app* and version *1.0* (Redis) as the storage option.
+> See https://istio.io/docs/tasks/traffic-management/secure-ingress/.  Any company with a public facing web application should read this section carefully.
 
-## Update the application
+### Example Yaml file for HTTPS 
 
-We let's deploy a new version of the analytics component. This new version *1.1* displays totals and percentages in addition to the count for each category.
-
-The following diagram shows what runs at the end of this section - only version *1.1* of our *voting-analytics* component has traffic routed from the *voting-app* component. Even though version *1.0* of our *voting-analytics* component continues to run and is referenced by the *voting-analytics* service, the Istio proxies disallow traffic to and from it.
-
-![The AKS Voting app components and routing.](./images/components-and-routing-02.png)
-
-Let's deploy version *1.1* of the *voting-analytics* component. Create this component in the *voting* namespace:
-
-```console
-kubectl apply -f kubernetes/step-2-update-voting-analytics-to-1.1.yaml --namespace voting
-```
-
-Open the sample AKS voting app in a browser again, using the IP address of the Istio Ingress Gateway obtained in the previous step.
-
-Your browser alternates between the two views shown below. Since you are using a Kubernetes Service for the *voting-analytics* component with only a single label selector (`app: voting-analytics`), Kubernetes uses the default behavior of round-robin between the pods that match that selector. In this case, it is both version *1.0* and *1.1* of your *voting-analytics* pods.
-
-![Version 1.0 of the analytics component running in our AKS Voting app.](./images/deploy-app-01.png)
-
-![Version 1.1 of the analytics component running in our AKS Voting app.](./images/update-app-01.png)
-
-You can visualize the switching between the two versions of the *voting-analytics* component as follows. Remember to use the IP address of your own Istio Ingress Gateway.
-
-```console
-INGRESS_IP=52.187.250.239
-for i in {1..5}; do curl -si $INGRESS_IP | grep results; done
-```
-
-The following example output shows the relevant part of the returned web site as the site switches between versions:
+Your typical port assignment of 443 with certificates and host names.
 
 ```
-  <div id="results"> Cats: 2 | Dogs: 4 </div>
-  <div id="results"> Cats: 2 | Dogs: 4 </div>
-  <div id="results"> Cats: 2/6 (33%) | Dogs: 4/6 (67%) </div>
-  <div id="results"> Cats: 2 | Dogs: 4 </div>
-  <div id="results"> Cats: 2/6 (33%) | Dogs: 4/6 (67%) </div>
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: bookinfo-gateway
+spec:
+  servers:
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    hosts:
+    - bookinfo.com
+    tls:
+      mode: SIMPLE
+      serverCertificate: /tmp/tls.crt
+      privateKey: /tmp/tls.key
 ```
 
-### Lock down traffic to version 1.1 of the application
 
-Now let's lock down traffic to only version *1.1* of the *voting-analytics* component and to version *1.0* of the *voting-storage* component. You then define routing rules for all of the other components.
 
-> * A *Virtual Service* defines a set of routing rules for one or more destination services.
-> * A *Destination Rule* defines traffic policies and version specific policies.
-> * A *Policy* defines what authentication methods can be accepted on workload(s).
+## Send 100% of incoming traffic to version 1 of reviews using the VirtualService
 
-You use the `istioctl` client binary to replace the Virtual Service definition on your *voting-app* and add Destination Rules and Virtual Services for the other components.
+The Yaml below directs 100% of the traffic to v1 or the reviews micro service.
 
-You also add a Policy to the *voting* namespace to ensure that all communicate between services is secured using mutual TLS and client certificates.
+As indicated above, you need to apply that laundry list of destination rules above for the code below to work.
 
-As there is an existing Virtual Service definition for *voting-app* that you replace, use the `istioctl replace` command as follows:
-
-```console
-istioctl replace -f istio/step-2a-update-voting-app-virtualservice.yaml --namespace voting
+```yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: reviews
+spec:
+  hosts:
+  - reviews
+  http:
+  - route:
+    - destination:
+        host: reviews
+        subset: v1
 ```
 
-The following example output shows the Istio Virtual Service are successfully updated:
+Once this Yaml code is applied, all traffic will be routed only to v1.
 
-```
-Updated config virtual-service/voting/voting-app to revision 141902
-```
+Evidence that traffic only routed to reviews v1. As you recall. v1 has no stars, v2 has black stars, and v3 has red stars.
 
-Next, use the `istioctl create` command to add the new Policy and also the new Destination Rules and Virtual Services for all the other components.
+![](./images/only-reviews-v1.png)
 
-* The Policy has `peers.mtls.mode` set to `STRICT` to ensure that mutual TLS is enforced between your services within the *voting* namespace.
-* You also set the `trafficPolicy.tls.mode` to `ISTIO_MUTUAL` in all our Destination Rules. Istio provides services with strong identities and secures communications between services using mutual TLS and client certificates that Istio transparently manages.
 
-```console
-istioctl create -f istio/step-2b-add-routing-for-all-components.yaml --namespace voting
-```
 
-The following example output shows the new Policy, Destination Rules, and Virtual Services are successfully created:
-
-```
-Created config policy/voting/default to revision 142118
-Created config destination-rule/voting/voting-app at revision 142119
-Created config destination-rule/voting/voting-analytics at revision 142120
-Created config virtual-service/voting/voting-analytics at revision 142121
-Created config destination-rule/voting/voting-storage at revision 142122
-Created config virtual-service/voting/voting-storage at revision 142123
-```
-
-If you open the AKS Voting app in a browser again, only the new version *1.1* of the *voting-analytics* component is used by the *voting-app* component.
-
-![Version 1.1 of the analytics component running in our AKS Voting app.](./images/update-app-01.png)
-
-You can more easily visualize that we are now only routed to version *1.1* of your *voting-analytics* component as follows. Remember to use the IP address of your Istio ingress gateway.
-
-You can visualize that you are now only routed to version *1.1* of your *voting-analytics* component as follows. Remember to use the IP address of your own Istio Ingress Gateway:
-
-```azurecli-interactive
-INGRESS_IP=52.187.250.239
-for i in {1..5}; do curl -si $INGRESS_IP | grep results; done
-```
-
-The following example output shows the relevant part of the returned web site:
-
-```
-  <div id="results"> Cats: 2/6 (33%) | Dogs: 4/6 (67%) </div>
-  <div id="results"> Cats: 2/6 (33%) | Dogs: 4/6 (67%) </div>
-  <div id="results"> Cats: 2/6 (33%) | Dogs: 4/6 (67%) </div>
-  <div id="results"> Cats: 2/6 (33%) | Dogs: 4/6 (67%) </div>
-  <div id="results"> Cats: 2/6 (33%) | Dogs: 4/6 (67%) </div>
-```
-
-Confirm that Istio uses mutual TLS to secure communications between each of our services. The following commands check the TLS settings for each of the *voting-app* services:
-
-```console
-istioctl authn tls-check voting-app.voting.svc.cluster.local
-istioctl authn tls-check voting-analytics.voting.svc.cluster.local
-istioctl authn tls-check voting-storage.voting.svc.cluster.local
-```
-
-This following example output shows that mutual TLS is enforced for each of the services via the Policy and Destination Rules:
-
-```
-HOST:PORT                                    STATUS     SERVER     CLIENT     AUTHN POLICY       DESTINATION RULE
-voting-app.voting.svc.cluster.local:8080     OK         mTLS       mTLS       default/voting     voting-app/voting
-
-HOST:PORT                                          STATUS     SERVER     CLIENT     AUTHN POLICY       DESTINATION RULE
-voting-analytics.voting.svc.cluster.local:8080     OK         mTLS       mTLS       default/voting     voting-analytics/voting
-
-HOST:PORT                                        STATUS     SERVER     CLIENT     AUTHN POLICY       DESTINATION RULE
-voting-storage.voting.svc.cluster.local:6379     OK         mTLS       mTLS       default/voting     voting-storage/voting
-```
-
-## Roll out a canary release of the application
-
-Now let's deploy a new version *2.0* of the *voting-app*, *voting-analytics*, and *voting-storage* components. The new *voting-storage* component use MySQL instead of Redis, and the *voting-app* and *voting-analytics* components are updated to allow them to use this new *voting-storage* component.
-
-The *voting-app* component now supports feature flag functionality. This feature flag allows you to test the canary release capability of Istio for a subset of users.
-
-The following diagram shows what runs at the end of this section.
-
-* Version *1.0* of the *voting-app* component, version *1.1* of the *voting-analytics* component and version *1.0* of the *voting-storage* component are able to communicate with each other.
-* Version *2.0* of the *voting-app* component, version *2.0* of the *voting-analytics* component and version *2.0* of the *voting-storage* component are able to communicate with each other.
-* Version *2.0* of the *voting-app* component are only accessible to users that have a specific feature flag set. This change is managed using a feature flag via a cookie.
-
-![The AKS Voting app components and routing.](./images/components-and-routing-03.png)
-
-First, update the Istio Destination Rules and Virtual Services to cater for these new components. These updates ensure that you don't route traffic incorrectly to the new components and users don't get unexpected access:
-
-```console
-istioctl replace -f istio/step-3-add-routing-for-2.0-components.yaml --namespace voting
-```
-
-The following example output shows the Destination Rules and Virtual Services are successfully updated:
-
-```
-Updated config destination-rule/voting/voting-app to revision 150930
-Updated config virtual-service/voting/voting-app to revision 150931
-Updated config destination-rule/voting/voting-analytics to revision 150937
-Updated config virtual-service/voting/voting-analytics to revision 150939
-Updated config destination-rule/voting/voting-storage to revision 150940
-Updated config virtual-service/voting/voting-storage to revision 150941
-```
-
-Next, let's add the Kubernetes objects for the new version *2.0* components. You also update the *voting-storage* service to include the *3306* port for MySQL:
-
-```console
-kubectl apply -f kubernetes/step-3-update-voting-app-with-new-storage.yaml --namespace voting
-```
-
-The following example output shows the Kubernetes objects are successfully updated or created:
-
-```
-service/voting-storage configured
-secret/voting-storage-secret created
-deployment.apps/voting-storage-2-0 created
-persistentvolumeclaim/mysql-pv-claim created
-deployment.apps/voting-analytics-2-0 created
-deployment.apps/voting-app-2-0 created
-```
-
-Wait until all the version *2.0* pods are running. Use the kubectl get pods command to view all pods in the *voting* namespace:
-
-```azurecli-interactive
-kubectl get pods --namespace voting
-```
-
-You should now be able to switch between the version *1.0* and version *2.0* (canary) of the voting application. The feature flag toggle at the bottom of the screen sets a cookie. This cookie is used by the *voting-app* Virtual Service to route users to the new version *2.0*.
-
-![Version 1.0 of the AKS Voting app - feature flag IS NOT set.](./images/canary-release-01.png)
-
-![Version 2.0 of the AKS Voting app - feature flag IS set.](./images/canary-release-02.png)
-
-The vote counts are different between the versions of the app. This difference highlights that you are using two different storage backends.
-
-## Finalize the rollout
-
-Once you've successfully tested the canary release, update the *voting-app* Virtual Service to route all traffic to version *2.0* of the *voting-app* component. All users then see version *2.0* of the application, regardless of whether the feature flag is set or not:
-
-![The AKS Voting app components and routing.](./images/components-and-routing-04.png)
-
-Update all the Destination Rules to remove the versions of the components you no longer want active. Then, update all the Virtual Services to stop referencing those versions.
-
-Since there's no longer any traffic to any of the older versions of the components, you can now safely delete all the deployments for those components.
-
-![The AKS Voting app components and routing.](./images/components-and-routing-05.png)
-
-You have now successfully rolled out a new version of the AKS Voting App.
 
 ## Configuring the circuit breaker
 
@@ -834,10 +1915,13 @@ cluster.outbound|8000||httpbin.default.svc.cluster.local.upstream_rq_pending_ove
 cluster.outbound|8000||httpbin.default.svc.cluster.local.upstream_rq_pending_total: 10
 ```
 
-# Misc Commands
+# Misc Commands 
+
+Sommand commands I'm collecting.
 
 ```bash
-FORTIO_POD=$(kubectl get pod | grep fortio | awk '{ print $1 }')
+
+FORTIO_POD=$(kubectl get pod | grep fortio | awk "{ print $1 }")
 history | grep "kubectl.*istioctl"
 history | grep "kubectl.*istioctl" > test.txt & vim test.txt
 history | grep "kubectl.*istioctl" > test.txt && vim test.txt
@@ -877,9 +1961,9 @@ kubectl describe pod voting-app-1-0-6c65c4bdd4-bdmld --namespace voting
 kubectl exec -it $FORTIO_POD  -c fortio /usr/local/bin/fortio -- load -c 2 -qps 0 -n 20 -loglevel Warning http://httpbin:8000/get
 kubectl exec -it $FORTIO_POD  -c fortio /usr/local/bin/fortio -- load -c 3 -qps 0 -n 20 -loglevel Warning http://httpbin:8000/get
 kubectl exec -it $FORTIO_POD  -c fortio /usr/local/bin/fortio -- load -curl  http://httpbin:8000/get
-kubectl exec -it $FORTIO_POD  -c istio-proxy  -- sh -c 'curl localhost:15000/stats' | grep httpbin | grep pending
+kubectl exec -it $FORTIO_POD  -c istio-proxy  -- sh -c "curl localhost:15000/stats" | grep httpbin | grep pending
 kubectl exec -it sleep-7dc47f96b6-7dfld -n bar -- /bin/sh
-kubectl exec -it sleep-7dc47f96b6-7dfld -n bar --container sleep -- /bin/sh
+- kubectl exec -it sleep-7dc47f96b6-7dfld -n bar --container sleep -- /bin/sh
 kubectl exec -it sleep-7dc47f96b6-7dfld -n bar --container sleep -- /bin/sh
 kubectl exec -it sleep-7dc47f96b6-7dfld -n legacy -- /bin/sh
 kubectl get destinationrule httpbin -o yaml
@@ -897,10 +1981,10 @@ kubectl get pods --all-namespaces
 kubectl get pods --namespace voting
 kubectl get pods -n istio-system
 kubectl get pods -n voting
-kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath='{.spec.containers[*].name}'
+kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath="{.spec.containers[*].name}"
 kubectl get pods               #-- the Bookinfo pods should be deleted
 kubectl get policies.authentication.istio.io --all-namespaces
-kubectl get service istio-ingressgateway --namespace istio-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+kubectl get service istio-ingressgateway --namespace istio-system -o jsonpath="{.status.loadBalancer.ingress[0].ip}"
 kubectl get services
 kubectl get services httpbin -o wide -n foo
 kubectl get svc istio-ingressgateway -n istio-system
@@ -908,6 +1992,10 @@ kubectl get virtualservices   #-- there should be no virtual services
 kubectl.kubernetes.io/last-applied-configuration: |
 kubectl label namespace voting istio-injection=enabled
 kubectl proxy
+
+
+
+
 kubectl apply -f <(istioctl kube-inject -f samples/bookinfo/kube/bookinfo.yaml)
 kubectl apply -f <(istioctl kube-inject -f samples/bookinfo/kube/bookinfo.yaml)
 kubectl create -f < (istioctl kube-inject -f bookinfo.yaml)
@@ -927,7 +2015,7 @@ kubectl apply -f <(istioctl kube-inject -f samples/httpbin/httpbin.yaml) -n bar
 kubectl apply -f <(istioctl kube-inject -f samples/sleep/sleep.yaml) -n bar
 kubectl apply -f < samples/sleep/sleep.yaml -n legacy
 kubectl get pod -l app=sleep -n bar -o jsonpath= {.items..metadata.name}
-kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath='{.spec.containers[*].name}'
+kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath="{.spec.containers[*].name}"
 kubectl exec -it sleep-7dc47f96b6-7dfld -n bar --container sleep -- /bin/sh
 kubectl create ns foo
 kubectl apply -f <(istioctl kube-inject -f samples/httpbin/httpbin.yaml) -n foo
@@ -939,7 +2027,7 @@ kubectl create ns legacy
 kubectl apply -f samples/httpbin/httpbin.yaml -n legacy
 kubectl apply -f samples/sleep/sleep.yaml -n legacy
 kubectl get pod -l app=sleep -n bar -o jsonpath={.items..metadata.name}
-kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath='{.spec.containers[*].name}'
+kubectl get pods sleep-7dc47f96b6-7dfld -n bar -o jsonpath="{.spec.containers[*].name}"
 kubectl get services httpbin -o wide -n foo
 kubectl exec -it sleep-7dc47f96b6-7dfld -n bar -- /bin/sh
 kubectl get policies.authentication.istio.io --all-namespaces
@@ -952,6 +2040,7 @@ kubectl apply -f  all-internal-traffic.yml
 kubectl exec -it sleep-7dc47f96b6-7dfld -n bar -- /bin/sh
 kubectl get pod -l app=sleep -n legacy -o jsonpath={.items..metadata.name}
 kubectl exec -it sleep-7dc47f96b6-7dfld -n legacy -- /bin/sh
+
 
 bash install-helm.sh
 cd helm
@@ -996,8 +2085,8 @@ helm list
 helm list --all
 helm ls
 helm ls --all prometheus
-helm ls | awk '{print $1}'
-helm ls | awk '{print $1}' | vim -
+helm ls | awk "{print $1}"
+helm ls | awk "{print $1}" | vim -
 helm repo update
 helm search node-exporter
 helm search prometheus
@@ -1025,3 +2114,99 @@ rm -r helm-prometheus/
 snap install helm --classic
 vim install-helm.sh
 tar xvzf helm-v2.12.1-linux-amd64.tar.gz
+```
+
+
+# Create an HTTPS service with Istio sidecar with mutual TLS enabled
+
+**Control Plane with TLS enabled** - You need to deploy Istio control plane with mutual TLS enabled. If you have istio control plane with mutual TLS disabled installed, please delete it. For example, if you followed the quick start:
+
+```
+$ kubectl delete -f install/kubernetes/istio-demo.yaml
+```
+
+And wait for everything is down, i.e., there is no pod in control plane namespace (istio-system).
+
+```
+$ kubectl get pod -n istio-system
+No resources found.
+```
+
+Then deploy the Istio control plane with mutual TLS enabled:
+
+```
+$ kubectl apply -f install/kubernetes/istio-demo-auth.yaml
+```
+
+Make sure everything is up and running:
+
+```
+$ kubectl get po -n istio-system
+NAME                                       READY     STATUS      RESTARTS   AGE
+grafana-6f6dff9986-r6xnq                   1/1       Running     0          23h
+istio-citadel-599f7cbd46-85mtq             1/1       Running     0          1h
+istio-cleanup-old-ca-mcq94                 0/1       Completed   0          23h
+istio-egressgateway-78dd788b6d-jfcq5       1/1       Running     0          23h
+istio-ingressgateway-7dd84b68d6-dxf28      1/1       Running     0          23h
+istio-mixer-post-install-g8n9d             0/1       Completed   0          23h
+istio-pilot-d5bbc5c59-6lws4                2/2       Running     0          23h
+istio-policy-64595c6fff-svs6v              2/2       Running     0          23h
+istio-sidecar-injector-645c89bc64-h2dnx    1/1       Running     0          23h
+istio-statsd-prom-bridge-949999c4c-mv8qt   1/1       Running     0          23h
+istio-telemetry-cfb674b6c-rgdhb            2/2       Running     0          23h
+istio-tracing-754cdfd695-wqwr4             1/1       Running     0          23h
+prometheus-86cb6dd77c-ntw88                1/1       Running     0          23h
+servicegraph-5849b7d696-jrk8h              1/1       Running     0          23h
+```
+
+Then redeploy the HTTPS service and sleep service
+
+```
+$ kubectl delete -f <(bin/istioctl kube-inject -f samples/sleep/sleep.yaml)
+$ kubectl apply -f <(bin/istioctl kube-inject -f samples/sleep/sleep.yaml)
+$ kubectl delete -f <(bin/istioctl kube-inject -f samples/https/nginx-app.yaml)
+$ kubectl apply -f <(bin/istioctl kube-inject -f samples/https/nginx-app.yaml)
+```
+
+Make sure the pod is up and running
+
+```
+$ kubectl get pod
+NAME                              READY     STATUS    RESTARTS   AGE
+my-nginx-9dvet                    2/2       Running   0          1h
+sleep-77f457bfdd-hdknx            2/2       Running   0          18h
+```
+
+And run
+
+```
+$ kubectl exec $(kubectl get pod -l app=sleep -o jsonpath={.items..metadata.name}) -c sleep -- curl https://my-nginx -k
+```
+
+Output:
+
+```
+...
+<h1>Welcome to nginx!</h1>
+...
+```
+
+
+The reason is that for the workflow “sleep -> sleep-proxy -> nginx-proxy -> nginx”, the whole flow is L7 traffic, and there is a L4 mutual TLS encryption between sleep-proxy and nginx-proxy. In this case, everything works fine.
+
+However, if you run this command from istio-proxy container, it will not work. And it should not.
+
+$ kubectl exec $(kubectl get pod -l app=sleep -o jsonpath={.items..metadata.name}) -c istio-proxy -- curl https://my-nginx -k
+curl: (35) gnutls_handshake() failed: Handshake failed
+command terminated with exit code 35
+
+The reason is that for the workflow “sleep-proxy -> nginx-proxy -> nginx”, nginx-proxy is expected mutual TLS traffic from sleep-proxy. In the command above, sleep-proxy does not provide client cert. As a result, it won’t work. Moreover, even sleep-proxy provides client cert in above command, it won’t work either since the traffic will be downgraded to http from nginx-proxy to nginx.
+
+### Cleanup
+```
+$ kubectl delete -f samples/sleep/sleep.yaml
+$ kubectl delete -f samples/https/nginx-app.yaml
+$ kubectl delete configmap nginxconfigmap
+$ kubectl delete secret nginxsecret
+```
+
