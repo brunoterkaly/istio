@@ -76,7 +76,7 @@ Output:
 
 The reason is that for the workflow “sleep -> sleep-proxy -> nginx-proxy -> nginx”, the whole flow is L7 traffic, and there is a L4 mutual TLS encryption between sleep-proxy and nginx-proxy. In this case, everything works fine.
 
-However, if you run this command from istio-proxy container, it will not work.
+However, if you run this command from istio-proxy container, it will not work. And it should not.
 
 $ kubectl exec $(kubectl get pod -l app=sleep -o jsonpath={.items..metadata.name}) -c istio-proxy -- curl https://my-nginx -k
 curl: (35) gnutls_handshake() failed: Handshake failed
