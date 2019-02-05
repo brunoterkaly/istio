@@ -415,7 +415,7 @@ Notice the `kind:` as seen below:
 
 #### default-mesh-policy.yaml
 
-```
+```yaml
 apiVersion: "authentication.istio.io/v1alpha1"
 kind: "MeshPolicy"
 metadata:
@@ -461,7 +461,7 @@ These destination rules are also set up for non-authorization type of reasons. F
 
 Allow internal traffic in cluster with Mutual TLS.
 
-```
+```yaml
 apiVersion: "networking.istio.io/v1alpha3"
 kind: "DestinationRule"
 metadata:

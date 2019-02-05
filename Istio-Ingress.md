@@ -4,15 +4,16 @@ Execute the following command to determine if your Kubernetes cluster is running
 
 ## This command will tell you if you have an an open external port
 
-```
+```bash
 $ kubectl get svc istio-ingressgateway -n istio-system
 NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)                                      AGE
 istio-ingressgateway   LoadBalancer   172.21.109.129   130.211.10.121  80:31380/TCP,443:31390/TCP,31400:31400/TCP   17h
 ```
+You'll also notice in your AKS created MC_* resource group, a public ip and load balancer has appeared.
 
 ## Asking the gateway for more detailed information
 
-```
+```bash
 $ export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
 $ echo $INGRESS_HOST
@@ -33,7 +34,7 @@ $ echo $SECURE_INGRESS_PORT
 
 ### httpbin-gateway.yml
 
-```
+```yaml
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
@@ -54,7 +55,7 @@ spec:
 
 ### httpbin-virtual-service.yml
 
-```
+```yaml
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
@@ -78,9 +79,9 @@ spec:
 ```
 ## Apply the gateway
 
-```
-kubectl apply -f httpbin-gateway.yml
-kubectl apply -f httpbin-virtual-service.yml
-kubectl apply -f bookinfo/networking/bookinfo-gateway.yaml
+```bash
+$ kubectl apply -f httpbin-gateway.yml
+$ kubectl apply -f httpbin-virtual-service.yml
+$ kubectl apply -f bookinfo/networking/bookinfo-gateway.yaml
 
 ```

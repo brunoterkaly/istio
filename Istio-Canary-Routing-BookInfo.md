@@ -39,7 +39,27 @@ https://istio.io/docs/concepts/traffic-management/
 
 ## Example of Canary version
 
-**% to specific versions** - You can specify via Pilot that you want 5% of traffic for a particular service to go to a canary version irrespective of the size of the canary deployment, or send traffic to a particular version depending on the content of the request.
+**% to specific versions** - You can specify via Pilot that you want 5% of traffic for a particular service to go to a canary version irrespective of the size of the canary deployment, or send traffic to a particular version depending on the content of the request. For the bookinfo example the following yaml file will let you specify between V2 and V3:
+
+```YAML
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: reviews
+spec:
+  hosts:
+    - reviews
+  http:
+  - route:
+    - destination:
+        host: reviews
+        subset: v2
+      weight: 95
+    - destination:
+        host: reviews
+        subset: v3
+      weight: 5
+```
 
 ### What is Pilot?
 

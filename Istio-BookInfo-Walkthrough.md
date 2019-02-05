@@ -92,6 +92,14 @@ deployment.extensions/productpage-v1 created
 
 ```
 
+Or with `automatic sidecar injection` First we will create a new namespace and then everything we place into that namespace will istio automatically. If you choose to automatically inject, make sure you add the namespace flag to the end of your command or else it will end up in the `default` namespace:
+
+```bash
+$ kubectl create namespace <YourNamespace>
+
+$ kubectl label namespace <YourNamespace> istio-injection=enabled
+```
+
 Let's go ahead and verify that the appropriate components got installed:
 
 ```
