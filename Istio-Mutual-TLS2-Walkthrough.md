@@ -91,4 +91,3 @@ $ kubectl delete -f samples/https/nginx-app.yaml
 $ kubectl delete configmap nginxconfigmap
 $ kubectl delete secret nginxsecret
 ```
-See also
